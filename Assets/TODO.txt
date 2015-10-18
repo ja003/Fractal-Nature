@@ -1,0 +1,4 @@
+
+18.10.2015
+read some existing methods and approaches and try to implement 
+some of them

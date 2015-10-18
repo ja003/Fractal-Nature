@@ -1,0 +1,16 @@
+18.10.2015
+first very simple implementation
+-added menu button to create river (no user parameters)
+-1)
+river goes through midle of terrain
+fixed river width
+all vertices y value = 0
+
+-2)
+vertices y value = vertex.y - p, where p is small number on "shores"
+and highest in the middle
+
+problems: 
+-texture on modified terrain does not look good (probably due to 
+not modifiing UVs)
+-on fly generating terrain destroys part of the river

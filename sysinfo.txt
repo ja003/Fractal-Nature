@@ -1,0 +1,205 @@
+System:
+  OS: Windows 7  (6.1.7600) 64bit
+  CPU: Intel(R) Core(TM) i5-2410M CPU @ 2.30GHz, count: 4
+  Physical RAM: 8044 MB
+  Addressable RAM: 2048 MB
+
+D3D9:
+  Renderer: Intel(R) HD Graphics Family
+  VendorID: 8086
+  Driver: nvumdshim.dll 9.18.13.3165
+  VRAM: 944 (via DXGI)
+
+OpenGL:
+  Version: 3.0.0 - Build 8.15.10.2255
+  Vendor: Intel
+  Renderer: Intel(R) HD Graphics Family
+  VRAM: 944 (via DXGI)
+  Extensions: GL_EXT_blend_minmax GL_EXT_blend_subtract GL_EXT_blend_color GL_EXT_abgr GL_EXT_texture3D GL_EXT_clip_volume_hint GL_EXT_compiled_vertex_array GL_SGIS_texture_edge_clamp GL_SGIS_generate_mipmap GL_EXT_draw_range_elements GL_SGIS_texture_lod GL_EXT_rescale_normal GL_EXT_packed_pixels GL_EXT_texture_edge_clamp GL_EXT_separate_specular_color GL_ARB_multitexture GL_EXT_texture_env_combine GL_EXT_bgra GL_EXT_blend_func_separate GL_EXT_secondary_color GL_EXT_fog_coord GL_EXT_texture_env_add GL_ARB_texture_cube_map GL_ARB_transpose_matrix GL_ARB_texture_env_add GL_IBM_texture_mirrored_repeat GL_EXT_multi_draw_arrays GL_NV_blend_square GL_ARB_texture_compression GL_3DFX_texture_compression_FXT1 GL_EXT_texture_filter_anisotropic GL_ARB_texture_border_clamp GL_ARB_point_parameters GL_ARB_texture_env_combine GL_ARB_texture_env_dot3 GL_ARB_texture_env_crossbar GL_EXT_texture_compression_s3tc GL_ARB_shadow GL_ARB_window_pos GL_EXT_shadow_funcs GL_EXT_stencil_wrap GL_ARB_vertex_program GL_EXT_texture_rectangle GL_ARB_fragment_program GL_EXT_stencil_two_side GL_ATI_separate_stencil GL_ARB_vertex_buffer_object GL_EXT_texture_lod_bias GL_ARB_occlusion_query GL_ARB_fragment_shader GL_ARB_shader_objects GL_ARB_shading_language_100 GL_ARB_texture_non_power_of_two GL_ARB_vertex_shader GL_NV_texgen_reflection GL_ARB_point_sprite GL_EXT_blend_equation_separate GL_ARB_depth_texture GL_ARB_texture_rectangle GL_ARB_draw_buffers GL_ARB_color_buffer_float GL_ARB_half_float_pixel GL_ARB_texture_float GL_ARB_pixel_buffer_object GL_EXT_framebuffer_object GL_ARB_draw_instanced GL_ARB_half_float_vertex GL_EXT_draw_buffers2 GL_WIN_swap_hint GL_EXT_texture_sRGB GL_ARB_multisample GL_EXT_packed_float GL_EXT_texture_shared_exponent GL_ARB_texture_rg GL_ARB_texture_compression_rgtc GL_NV_conditional_render GL_EXT_texture_swizzle GL_ARB_framebuffer_sRGB GL_EXT_packed_depth_stencil GL_ARB_depth_buffer_float GL_EXT_transform_feedback GL_EXT_framebuffer_blit GL_EXT_framebuffer_multisample GL_ARB_framebuffer_object GL_EXT_texture_array GL_EXT_texture_integer GL_ARB_map_buffer_range GL_EXT_texture_snorm GL_INTEL_performance_queries GL_ARB_vertex_array_object 
+
+User locale: en-US
+System locale: en-US
+
+Running processes:
+DTShellHlp.exe (2660)
+    path: C:\Program Files (x86)\DAEMON Tools Pro\DTShellHlp.exe
+    company:  DT Soft Ltd
+    product:  DAEMON Tools Pro
+    filedesc: DAEMON Tools Shell Extensions Helper
+    filever:  4.40.311.197
+    prodver:  4.40.311.197
+NvTmru.exe (2368)
+    path: C:\Program Files (x86)\NVIDIA Corporation\NVIDIA Update Core\NvTmru.exe
+    company:  NVIDIA Corporation
+    product:  NVIDIA GeForce Experience
+    filedesc: NVIDIA NvTmru Application
+    filever:  9.3.21.0
+    prodver:  9.3.21.0
+rundll32.exe (2164)
+    path: C:\Windows\SysWOW64\rundll32.exe
+    company:  Microsoft Corporation
+    product:  Microsoft® Windows® Operating System
+    filedesc: Windows host process (Rundll32)
+    filever:  6.1.7600.16385
+    prodver:  6.1.7600.16385
+netsession_win.exe (3080)
+    path: C:\Users\Popa\AppData\Local\Akamai\netsession_win.exe
+    company:  Akamai Technologies, Inc.
+    product:  Akamai NetSession Client
+    filedesc: Akamai NetSession Client
+    filever:  1.8.9.2
+    prodver:  1.8.9.2
+Dropbox.exe (3112)
+    path: C:\Users\Popa\AppData\Roaming\Dropbox\bin\Dropbox.exe
+    company:  Dropbox, Inc.
+    product:  Dropbox
+    filedesc: Dropbox
+    filever:  2.4.6.0
+    prodver:  1.0.0.1
+netsession_win.exe (3340)
+    path: C:\Users\Popa\AppData\Local\Akamai\netsession_win.exe
+    company:  Akamai Technologies, Inc.
+    product:  Akamai NetSession Client
+    filedesc: Akamai NetSession Client
+    filever:  1.8.9.2
+    prodver:  1.8.9.2
+IAStorIcon.exe (3468)
+    path: C:\Program Files (x86)\Intel\Intel(R) Rapid Storage Technology\IAStorIcon.exe
+    company:  Intel Corporation
+    product:  IAStorIcon
+    filedesc: IAStorIcon
+    filever:  10.0.0.1046
+    prodver:  10.0.0.1046
+LManager.exe (3480)
+    path: C:\Program Files (x86)\Launch Manager\LManager.exe
+    company:  Dritek System Inc.
+    product:  Launch Manager
+    filedesc: Launch Manager
+    filever:  5.0.3.1319
+    prodver:  5.0.3.1319
+nusb3mon.exe (3488)
+    path: C:\Program Files (x86)\Renesas Electronics\USB 3.0 Host Controller Driver\Application\nusb3mon.exe
+    company:  Renesas Electronics Corporation
+    product:  USB 3.0 Monitor
+    filedesc: USB 3.0 Monitor
+    filever:  2.0.0.0
+    prodver:  2.0.0.0
+vprot.exe (3524)
+    path: C:\Program Files (x86)\AVG SafeGuard toolbar\vprot.exe
+    company:  
+    product:  VProtect Application
+    filedesc: VProtect Application
+    filever:  17.1.2.1
+    prodver:  17.1.2.1
+LMworker.exe (3708)
+    path: C:\Program Files (x86)\Launch Manager\LMworker.exe
+    company:  Dritek System Inc.
+    product:  Launch Manager Worker
+    filedesc: Launch Manager Worker
+    filever:  2.0.1.1319
+    prodver:  2.0.1.1319
+DLMSession.exe (3720)
+    path: C:\Program Files (x86)\Common Files\Autodesk Shared\Autodesk Download Manager\DLMSession.exe
+    company:  Autodesk, Inc.
+    product:  Autodesk Download Manager
+    filedesc: Autodesk Download Manager
+    filever:  2.0.6.0
+    prodver:  2.0.6.0
+AvastUI.exe (3792)
+    path: C:\Program Files\AVAST Software\Avast\AvastUI.exe
+    company:  AVAST Software
+    product:  avast! Antivirus
+    filedesc: avast! Antivirus
+    filever:  9.0.2007.172
+    prodver:  9.0.2007.172
+SearchSettings.exe (3816)
+    path: C:\Program Files (x86)\Common Files\Spigot\Search Settings\SearchSettings.exe
+    company:  Spigot, Inc.
+    product:  Widgi Toolbar
+    filedesc: Search Settings
+    filever:  8.2.0.3
+    prodver:  8.2.0.3
+uTorrent.exe (4956)
+    path: C:\Users\Popa\AppData\Roaming\uTorrent\uTorrent.exe
+    company:  BitTorrent Inc.
+    product:  µTorrent
+    filedesc: µTorrent
+    filever:  3.3.1.30017
+    prodver:  3.3.1.30017
+Cm106eye.exe (1304)
+    path: C:\Windows\system\Cm106eye.exe
+    company:  
+    product:  CmEye Application
+    filedesc: CmEye MFC Application
+    filever:  1.0.0.2
+    prodver:  1.0.0.2
+AIMP3.exe (3612)
+    path: C:\Program Files (x86)\AIMP3\AIMP3.exe
+    company:  AIMP DevTeam
+    product:  AIMP3
+    filedesc: AIMP3
+    filever:  3.5.5.1324
+    prodver:  3.5.5.1324
+firefox.exe (2248)
+    path: C:\Program Files (x86)\Mozilla Firefox\firefox.exe
+    company:  Mozilla Corporation
+    product:  Firefox
+    filedesc: Firefox
+    filever:  25.0.1.5064
+    prodver:  25.0.1.0
+plugin-container.exe (4484)
+    path: C:\Program Files (x86)\Mozilla Firefox\plugin-container.exe
+    company:  Mozilla Corporation
+    product:  Firefox
+    filedesc: Plugin Container for Firefox
+    filever:  25.0.1.5064
+    prodver:  25.0.1.0
+FlashPlayerPlugin_11_8_800_168.exe (5616)
+    path: C:\Windows\SysWOW64\Macromed\Flash\FlashPlayerPlugin_11_8_800_168.exe
+    company:  Adobe Systems, Inc.
+    product:  Shockwave Flash
+    filedesc: Adobe Flash Player 11.8 r800
+    filever:  11.8.800.168
+    prodver:  11.8.800.168
+FlashPlayerPlugin_11_8_800_168.exe (6512)
+    path: C:\Windows\SysWOW64\Macromed\Flash\FlashPlayerPlugin_11_8_800_168.exe
+    company:  Adobe Systems, Inc.
+    product:  Shockwave Flash
+    filedesc: Adobe Flash Player 11.8 r800
+    filever:  11.8.800.168
+    prodver:  11.8.800.168
+MonoDevelop.exe (1496)
+    path: C:\Program Files (x86)\Unity\MonoDevelop\bin\MonoDevelop.exe
+    company:  
+    product:  MonoDevelop
+    filedesc: MonoDevelop
+    filever:  2.6.0.0
+    prodver:  2.6.0.0
+UnityBugReporter.exe (13260)
+    path: C:\Program Files (x86)\Unity\Editor\UnityBugReporter.exe
+    company:  Unity Technologies ApS
+    product:  Unity Bug Reporter
+    filedesc: Unity Bug Reporter
+    filever:  4.2.2.12621
+    prodver:  4.2.2.12621
+UnityBugReporter.exe (12172)
+    path: C:\Program Files (x86)\Unity\Editor\UnityBugReporter.exe
+    company:  Unity Technologies ApS
+    product:  Unity Bug Reporter
+    filedesc: Unity Bug Reporter
+    filever:  4.2.2.12621
+    prodver:  4.2.2.12621
+Unity.exe (12672)
+    path: C:\Program Files (x86)\Unity\Editor\Unity.exe
+    company:  Unity Technologies ApS
+    product:  Unity
+    filedesc: Unity Editor
+    filever:  4.2.2.12621
+    prodver:  4.2.2.12621
+UnityBugReporter.exe (12280)
+    path: C:\Program Files (x86)\Unity\Editor\UnityBugReporter.exe
+    company:  Unity Technologies ApS
+    product:  Unity Bug Reporter
+    filedesc: Unity Bug Reporter
+    filever:  4.2.2.12621
+    prodver:  4.2.2.12621

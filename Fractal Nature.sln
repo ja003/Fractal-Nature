@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fractal Nature.CSharp", "Fractal Nature.CSharp.csproj", "{4DB2D1FA-E9B7-55B0-32CF-D637C7DC6ADE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4DB2D1FA-E9B7-55B0-32CF-D637C7DC6ADE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DB2D1FA-E9B7-55B0-32CF-D637C7DC6ADE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DB2D1FA-E9B7-55B0-32CF-D637C7DC6ADE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DB2D1FA-E9B7-55B0-32CF-D637C7DC6ADE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,159 @@
+fileFormatVersion: 2
+guid: 8d9631a30cdf55540b68dfa927a4778f
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: Box01
+    100002: Cylinder005
+    100004: Cylinder006
+    100006: Cylinder01
+    100008: Cylinder02
+    100010: Cylinder03
+    100012: Cylinder04
+    100014: elice
+    100016: Group001
+    100018: guns
+    100020: Lockheed
+    100022: //RootNode
+    100024: Sphere002
+    100026: Sphere003
+    100028: Sphere004
+    100030: Sphere005
+    100032: Sphere006
+    100034: Sphere007
+    100036: Sphere008
+    100038: Sphere01
+    100040: stabilizer
+    100042: wing
+    400000: Box01
+    400002: Cylinder005
+    400004: Cylinder006
+    400006: Cylinder01
+    400008: Cylinder02
+    400010: Cylinder03
+    400012: Cylinder04
+    400014: elice
+    400016: Group001
+    400018: guns
+    400020: Lockheed
+    400022: //RootNode
+    400024: Sphere002
+    400026: Sphere003
+    400028: Sphere004
+    400030: Sphere005
+    400032: Sphere006
+    400034: Sphere007
+    400036: Sphere008
+    400038: Sphere01
+    400040: stabilizer
+    400042: wing
+    2300000: Box01
+    2300002: Cylinder005
+    2300004: Cylinder006
+    2300006: Cylinder01
+    2300008: Cylinder02
+    2300010: Cylinder03
+    2300012: Cylinder04
+    2300014: Sphere002
+    2300016: Sphere003
+    2300018: Sphere004
+    2300020: Sphere005
+    2300022: Sphere006
+    2300024: Sphere007
+    2300026: Sphere008
+    2300028: Sphere01
+    2300030: stabilizer
+    2300032: wing
+    3300000: Box01
+    3300002: Cylinder005
+    3300004: Cylinder006
+    3300006: Cylinder01
+    3300008: Cylinder02
+    3300010: Cylinder03
+    3300012: Cylinder04
+    3300014: Sphere002
+    3300016: Sphere003
+    3300018: Sphere004
+    3300020: Sphere005
+    3300022: Sphere006
+    3300024: Sphere007
+    3300026: Sphere008
+    3300028: Sphere01
+    3300030: stabilizer
+    3300032: wing
+    4300000: Box01
+    4300002: wing
+    4300004: stabilizer
+    4300006: Cylinder01
+    4300008: Cylinder02
+    4300010: Sphere01
+    4300012: Cylinder03
+    4300014: Sphere008
+    4300016: Sphere005
+    4300018: Sphere007
+    4300020: Sphere006
+    4300022: Sphere002
+    4300024: Sphere004
+    4300026: Sphere003
+    4300028: Cylinder006
+    4300030: Cylinder005
+    4300032: Cylinder04
+    9500000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: .00999999978
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  additionalBone: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
