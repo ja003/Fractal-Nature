@@ -42,7 +42,7 @@ public class MainMesh : MonoBehaviour {
 	
 	//Meshes data
 	Vector3[][]  verticesWater;
-	Vector3[,]   vertices;
+	public Vector3[,]   vertices;
 	Vector3[][]  verticesOut;
 	
 	Vector2[]    waterUv;
@@ -337,7 +337,7 @@ public class MainMesh : MonoBehaviour {
 
 
     //***********<RIVER...>*************
-
+    /*
     public void GenerateRiver()
     {
 
@@ -356,6 +356,7 @@ public class MainMesh : MonoBehaviour {
             }
         }
     }
+    */
 
 
     //***********<...RIVER>*************

@@ -87,6 +87,7 @@ public class MainLoop : MonoBehaviour {
 	float slopeLimit = 0.0f;    // Rock altitude
 	float slopeStrength = 6.0f; // Rock multiplier
 	float noiseTexValue = 0.2f; // Random noise range
+    
 
 	void Start() {
 		
@@ -108,6 +109,8 @@ public class MainLoop : MonoBehaviour {
 		
 		// Build mesh
 		terrain.build();
+        
+
 	}
 
 	// Main update loop
@@ -232,7 +235,10 @@ public class MainLoop : MonoBehaviour {
             {
 
                 // Apply algorithm and reset procedural texture
-                terrain.GenerateRiver();
+                //terrain.GenerateRiver();
+                //RiverGenerator riverGen = new RiverGenerator();
+                //riverGen.GenerateRiver();
+                
                 terrain.applyProceduralTex(true, sandColor, sandLimit, sandStrength, sandCoverage, true, grassColor, grassStrength, true, snowColor, snowLimit, snowStrength, snowCoverage, true, rockColor, slopeLimit, slopeStrength, noiseTexValue);
                 terrain.build();
             }

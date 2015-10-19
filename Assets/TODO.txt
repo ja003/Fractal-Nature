@@ -2,3 +2,7 @@
 18.10.2015
 read some existing methods and approaches and try to implement 
 some of them
+
+19.10.2015
+ask if its a good idea to decompose the code or it is okay to leave it as 
+messy as it is 

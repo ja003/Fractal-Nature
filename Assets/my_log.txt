@@ -14,3 +14,9 @@ problems:
 -texture on modified terrain does not look good (probably due to 
 not modifiing UVs)
 -on fly generating terrain destroys part of the river
+
+19.10.2015
+code decomposition
+try to decompose Scripts into more classes
+seperated the original and created my own folder
+
