@@ -111,6 +111,40 @@ public class SceneManager : MonoBehaviour {
         // Build mesh
         terrain.build();
 
+        /* not working
+        Color markColor = new Color(1, 0, 0);
+        for (int x = 0; x <= 20; x++)
+        {
+            for (int z = 0; z <= 20; z++)
+            {
+                terrain.heightMap.SetPixel(x, z, markColor);
+            }
+        }
+        for (int i = 0; i < 4; i++)
+        {
+            terrain.myMesh[i].vertices = terrain.verticesOut[i];
+            terrain.myMesh[i].normals = terrain.normals[i];
+            terrain.myMesh[i].RecalculateBounds();
+
+            terrain.waterMap[i].Apply();
+
+            terrain.myWaterMesh[i].vertices = terrain.verticesWater[i];
+            terrain.myWaterMesh[i].RecalculateNormals();
+            terrain.myWaterMesh[i].RecalculateBounds();
+        }
+        terrain.build();
+        */
+
+        /*DEBUG
+        for(int x = 50; x < 70; x++)
+        {
+            for(int z = 0; z < terrain.terrdainSize; z++)
+            {
+                Debug.Log("["+x+","+z+"]="+terrain.vertices[x,z].y);
+            }
+        }
+        */
+
 
     }
 
@@ -250,8 +284,8 @@ public class SceneManager : MonoBehaviour {
                 RiverGenerator riverGen = new RiverGenerator(terrain);
                 riverGen.GenerateRiver();
 
-                terrain.applyProceduralTex(true, sandColor, sandLimit, sandStrength, sandCoverage, true, grassColor, grassStrength, true, snowColor, snowLimit, snowStrength, snowCoverage, true, rockColor, slopeLimit, slopeStrength, noiseTexValue);
-                terrain.build();
+                //terrain.applyProceduralTex(true, sandColor, sandLimit, sandStrength, sandCoverage, true, grassColor, grassStrength, true, snowColor, snowLimit, snowStrength, snowCoverage, true, rockColor, slopeLimit, slopeStrength, noiseTexValue);
+                //terrain.build();
             }
 
             offset = 135; // Y offset value
@@ -276,6 +310,7 @@ public class SceneManager : MonoBehaviour {
             // FREE button settings
             if (GUI.Button(new Rect(Screen.width - menuWidth + 10, offset + 25, menuWidth / 2 - rightOffset - 20, 25), "Free"))
             {
+                //terrain.ColorPixels();
 
                 // Deactivate flight script, activate free mouse look and movement
                 GameObject.Find("Airplane").GetComponent<PlanePilot>().enabled = false;

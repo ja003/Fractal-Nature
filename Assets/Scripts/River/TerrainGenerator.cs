@@ -11,9 +11,9 @@ public class TerrainGenerator  {
     public Mesh[] myWaterMesh;
 
     //Textures
-    Texture2D heightMap;
-    Texture2D[] waterMap;
-    Texture2D proceduralTexture;
+    public Texture2D heightMap;
+    public Texture2D[] waterMap;
+    public Texture2D proceduralTexture;
 
     //Mesh limits 
     public Vector3 endOf;
@@ -34,14 +34,14 @@ public class TerrainGenerator  {
     Vector2 waterUvScale;
 
     //Meshes data
-    Vector3[][] verticesWater;
+    public Vector3[][] verticesWater;
     public Vector3[,] vertices;
-    Vector3[][] verticesOut;
+    public Vector3[][] verticesOut;
 
     Vector2[] waterUv;
     Vector2[][] uv;
     int[] triangles;
-    Vector3[][] normals;
+    public Vector3[][] normals;
 
     //Blurring kernel
     float[,] gaussianKernel;
@@ -255,8 +255,18 @@ public class TerrainGenerator  {
             }
         }
 
+        Color markColor = new Color(1,0,0);
+        for (int x = 0; x <= 20; x++)
+        {
+            for (int z = 0; z <= 20; z++)
+            {
+                //heightMap.SetPixel(x, z, markColor);
+            }
+        }
+
         //Apply changes to heighmap teture
         heightMap.Apply();
+        //ColorPixels();
 
         //Assign data structures to the meshes
         for (int i = 0; i < 4; i++)
@@ -276,6 +286,22 @@ public class TerrainGenerator  {
         startOf = verticesOut[0][0];
         middleOf = (startOf + endOf) / 2;
     }
+
+    public void ColorPixels()
+    {
+        Color markColor = new Color(1, 0, 0);
+        for (int x = 0; x <= 10; x++)
+        {
+            for (int z = 0; z <= 30; z++)
+            {
+                heightMap.SetPixel(x, z, markColor);
+            }
+        }
+
+        //Apply changes to heighmap teture
+        heightMap.Apply();
+    }
+
 
     private void initMeshes()
     {

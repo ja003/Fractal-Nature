@@ -6,3 +6,9 @@ some of them
 19.10.2015
 ask if its a good idea to decompose the code or it is okay to leave it as 
 messy as it is 
+
+22.10.2015
+improve BestDirectionRiver algorithm
+-user can generate different tracks and then confirm one, which will 
+be created
+-implement river coridor function

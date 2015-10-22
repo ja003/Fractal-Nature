@@ -15,8 +15,28 @@ problems:
 not modifiing UVs)
 -on fly generating terrain destroys part of the river
 
+
 19.10.2015
 code decomposition
 try to decompose Scripts into more classes
 seperated the original and created my own folder
+
+23.10.2015
+implementing BestDirectionRiver algorithm based on finding highest 
+and lowest vertex on sides and conntecting them
+river track is curved by finding lowest points in area
+around the line connecting found points
+
+
+
+
+
+
+
+
+
+
+
+
+
 
