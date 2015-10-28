@@ -12,3 +12,8 @@ improve BestDirectionRiver algorithm
 -user can generate different tracks and then confirm one, which will 
 be created
 -implement river coridor function
+
+28.10.2015
+rework terrain generation algorithm to produce more realistic 
+environment by partitioning into regions with different hight
+parameters

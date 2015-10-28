@@ -3,10 +3,10 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 
-public class RiverGenerator  {
+public class RiverGenerator {
 
-    
-    public TerrainGenerator terrain { get; set; }
+
+    public TerrainGenerator terrain;
     public Vector3[,] vertices;
     public Texture2D heightMap;
     int terrainSize;
@@ -30,13 +30,11 @@ public class RiverGenerator  {
 
     public void GenerateRiver()
     {
-        //SimpleSinusRiver();
+        
+        SimpleSinusRiver();
+        terrain.build();
 
         BestDirectionRiver();
-
-        
-        
-        
     }
 
     public void BestDirectionRiver()
@@ -49,55 +47,62 @@ public class RiverGenerator  {
         SetLowestCandidate(candidateLowest, candidateHighest);
         SetSecondLowestCandidate(candidateLowest, candidateScndLowest);
 
-        Debug.Log(candidateHighest.x + "," + candidateHighest.z + "-highest=" + candidateHighest.value);
-        Debug.Log(candidateLowest.x + "," + candidateLowest.z + "-lowest=" + candidateLowest.value);
-        Debug.Log(candidateScndLowest.x + "," + candidateScndLowest.z + "-2-lowest=" + candidateLowest.value);
+        //Debug.Log(candidateHighest.x + "," + candidateHighest.z + "-highest=" + candidateHighest.value);
+        //Debug.Log(candidateLowest.x + "," + candidateLowest.z + "-lowest=" + candidateLowest.value);
+        //Debug.Log(candidateScndLowest.x + "," + candidateScndLowest.z + "-2-lowest=" + candidateLowest.value);
 
 
         Vector3 markColor = new Vector3(0, 0, 1);
-        vertices[0, 0].y = 0.5f;
+        terrain.vertices[0, 0].y = 0.5f;
         
         
         //mark z-axis
         terrain.ColorPixels();
-        
+
         //
-        ColorPixel(candidateHighest.x, candidateHighest.z,3, blueColor);
-        ColorPixel(candidateLowest.x, candidateLowest.z,3, blueColor);
-        ColorPixel(candidateScndLowest.x, candidateScndLowest.z,5, pinkColor);
+        //ColorPixel(candidateHighest.x, candidateHighest.z,3, blueColor);
+        //ColorPixel(candidateLowest.x, candidateLowest.z,3, blueColor);
+        //ColorPixel(candidateScndLowest.x, candidateScndLowest.z,5, pinkColor);
 
 
-        ColorLine(candidateHighest, candidateLowest,3,blueColor);
+        ColorLine(candidateHighest, candidateLowest, 3, blueColor);
+        MarkLowSpotsOnLine(candidateHighest, candidateLowest, 10, greenColor);
+
+
         ColorLine(candidateScndLowest, candidateLowest, 3, pinkColor);
+        MarkLowSpotsOnLine(candidateScndLowest, candidateLowest, 10, redColor);
 
-        MarkLowSpotsOnLine(candidateHighest, candidateLowest,10);
-        MarkLowSpotsOnLine(candidateScndLowest, candidateLowest,10);
     }
 
-    public void MarkLowSpotsOnLine(Vertex vert1, Vertex vert2, int density)
+    public void MarkLowSpotsOnLine(Vertex vert1, Vertex vert2, int density, Color color)
     {
         List<Vertex> lowVertices = new List<Vertex>();
-        if(vert1.x > vert2.x)
+        if (vert1.x > vert2.x)
         {
             Vertex tmp = new Vertex(vert1.x, vert1.z, vert1.value);
             vert1 = vert2;
             vert2 = tmp;
         }
-        Color greenColor = new Color(0, 1, 0);
+
         int z;
-        for(int x = vert1.x; x < vert2.x; x += ((vert2.x - vert1.x) / density)){
-            z = GetZCoord(vert1, vert2, x);
-            ColorPixel(x, z, 1, greenColor);
-            lowVertices.Add(GetLowestPointInArea(x,z,10));
+        if (((vert2.x - vert1.x) / density) > 0)
+        {
+            for (int x = vert1.x; x < vert2.x; x += ((vert2.x - vert1.x) / density))
+            {
+                z = GetZCoord(vert1, vert2, x);
+                ColorPixel(x, z, 1, color);
+                lowVertices.Add(GetLowestPointInArea(x, z, 10));
+            }
         }
-        for(int i = 0; i < lowVertices.Count; i++)
+        for (int i = 0; i < lowVertices.Count; i++)
         {
             //Debug.Log("vert" + i + ":" + lowVertices[i]);
-            ColorPixel(lowVertices[i].x, lowVertices[i].z,3, redColor);
-            if(i+1 < lowVertices.Count)
-                ColorLine(lowVertices[i], lowVertices[i + 1], 2, greenColor);
+            ColorPixel(lowVertices[i].x, lowVertices[i].z, 3, color);
+            if (i + 1 < lowVertices.Count)
+                ColorLine(lowVertices[i], lowVertices[i + 1], 2, color);
         }
     }
+
     public Vertex GetLowestPointInArea(int _x,int _z, int area)
     {
         Vertex lowestVert = new Vertex(_x,_z,vertices[_x,_z].y);
@@ -311,7 +316,7 @@ public class RiverGenerator  {
             {
                 if (!(_x < 0 || _x > terrainSize-1 || _z < 0 || _z > terrainSize-1))
                 {
-                    sum += terrain.vertices[_x, _z].y;
+                    sum += vertices[_x, _z].y;
                 }
                 else //avoid corners
                 {
@@ -375,7 +380,7 @@ public class RiverGenerator  {
         int shift = 50;//cant be too high on smaller maps - its caught later in catch
 
         //using sinus function
-        for (int x = 0; x < terrain.terrainSize; x++)
+        for (int x = 0; x < terrainSize; x++)
         {
             for (int z = terrainSize / 2 - riverWidth - shift; z < terrainSize / 2 + riverWidth - shift; z++)
             {
@@ -402,7 +407,7 @@ public class RiverGenerator  {
     {
         riverWidth = 16;
 
-        for (int x = 0; x < terrain.terrainSize; x++)
+        for (int x = 0; x < terrainSize; x++)
         {
             for (int z = terrainSize / 2 - riverWidth; z < terrainSize / 2 + riverWidth; z++)
             {

@@ -27,6 +27,10 @@ and lowest vertex on sides and conntecting them
 river track is curved by finding lowest points in area
 around the line connecting found points
 
+28.10.2015
+decomposition of project
+Erosion and Filter functions moved to seperate classes
+
 
 
 

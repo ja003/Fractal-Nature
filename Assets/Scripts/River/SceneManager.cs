@@ -1,10 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SceneManager : MonoBehaviour {
+public class SceneManager : MonoBehaviour
+{
 
     // Main terrain object
     public TerrainGenerator terrain;
+    RiverGenerator riverGenerator;
+    FilterManager filterManager;
+    ErosionManager erosionManager;
+
+
     //CWater water;
 
     // Camera position
@@ -96,6 +102,7 @@ public class SceneManager : MonoBehaviour {
         // Initialise main Class object
         terrain = new TerrainGenerator();
 
+        
         // Calling the constructor (Unity's C# does not allow conventional constructors)
         terrain.initialise(patchSize, patchMatrixSize);
 
@@ -111,40 +118,11 @@ public class SceneManager : MonoBehaviour {
         // Build mesh
         terrain.build();
 
-        /* not working
-        Color markColor = new Color(1, 0, 0);
-        for (int x = 0; x <= 20; x++)
-        {
-            for (int z = 0; z <= 20; z++)
-            {
-                terrain.heightMap.SetPixel(x, z, markColor);
-            }
-        }
-        for (int i = 0; i < 4; i++)
-        {
-            terrain.myMesh[i].vertices = terrain.verticesOut[i];
-            terrain.myMesh[i].normals = terrain.normals[i];
-            terrain.myMesh[i].RecalculateBounds();
-
-            terrain.waterMap[i].Apply();
-
-            terrain.myWaterMesh[i].vertices = terrain.verticesWater[i];
-            terrain.myWaterMesh[i].RecalculateNormals();
-            terrain.myWaterMesh[i].RecalculateBounds();
-        }
-        terrain.build();
-        */
-
-        /*DEBUG
-        for(int x = 50; x < 70; x++)
-        {
-            for(int z = 0; z < terrain.terrdainSize; z++)
-            {
-                Debug.Log("["+x+","+z+"]="+terrain.vertices[x,z].y);
-            }
-        }
-        */
-
+        //erosionManager has to be created when 
+        erosionManager = new ErosionManager(terrain);
+        erosionManager.initHydraulicMaps();
+        riverGenerator = new RiverGenerator(terrain);
+        filterManager = new FilterManager(terrain);
 
     }
 
@@ -181,7 +159,7 @@ public class SceneManager : MonoBehaviour {
         {
 
             // Function call
-            terrain.applyThermalErosion(thermalIterations, thermalSlope, thermalC);
+            erosionManager.applyThermalErosion(thermalIterations, thermalSlope, thermalC);
             // Refresh texture
             terrain.applyProceduralTex(true, sandColor, sandLimit, sandStrength, sandCoverage, true, grassColor, grassStrength, true, snowColor, snowLimit, snowStrength, snowCoverage, true, rockColor, slopeLimit, slopeStrength, noiseTexValue);
             // Refresh mesh
@@ -193,7 +171,7 @@ public class SceneManager : MonoBehaviour {
         {
 
             // Function call
-            terrain.applyHydraulicErosion(rainFlag, rainFreq, waterViscosity, waterTerrDens, waterDeposition, waterEvap, rainAmount, waterGrav);
+            erosionManager.applyHydraulicErosion(rainFlag, rainFreq, waterViscosity, waterTerrDens, waterDeposition, waterEvap, rainAmount, waterGrav);
             // Refresh texture
             terrain.applyProceduralTex(true, sandColor, sandLimit, sandStrength, sandCoverage, true, grassColor, grassStrength, true, snowColor, snowLimit, snowStrength, snowCoverage, true, rockColor, slopeLimit, slopeStrength, noiseTexValue);
             // Refresh mesh
@@ -281,8 +259,8 @@ public class SceneManager : MonoBehaviour {
 
                 // Apply algorithm and reset procedural texture
                 //terrain.GenerateRiver();
-                RiverGenerator riverGen = new RiverGenerator(terrain);
-                riverGen.GenerateRiver();
+
+                riverGenerator.GenerateRiver();
 
                 //terrain.applyProceduralTex(true, sandColor, sandLimit, sandStrength, sandCoverage, true, grassColor, grassStrength, true, snowColor, snowLimit, snowStrength, snowCoverage, true, rockColor, slopeLimit, slopeStrength, noiseTexValue);
                 //terrain.build();
@@ -651,7 +629,7 @@ public class SceneManager : MonoBehaviour {
             {
 
                 // Apply algorithm and build procedural texture
-                terrain.applyGaussianBlur(gaussAmount, kernelSize, nullVec, endPoint);
+                filterManager.applyGaussianBlur(gaussAmount, kernelSize, nullVec, endPoint);
                 terrain.applyProceduralTex(true, sandColor, sandLimit, sandStrength, sandCoverage, true, grassColor, grassStrength, true, snowColor, snowLimit, snowStrength, snowCoverage, true, rockColor, slopeLimit, slopeStrength, noiseTexValue);
                 terrain.build();
             }
@@ -677,7 +655,7 @@ public class SceneManager : MonoBehaviour {
             {
 
                 // Apply algorithm and reset procedural texture
-                terrain.applySpikesFilter(1.0f - spikesStrength);
+                filterManager.applySpikesFilter(1.0f - spikesStrength);
                 terrain.applyProceduralTex(true, sandColor, sandLimit, sandStrength, sandCoverage, true, grassColor, grassStrength, true, snowColor, snowLimit, snowStrength, snowCoverage, true, rockColor, slopeLimit, slopeStrength, noiseTexValue);
                 terrain.build();
             }
@@ -736,7 +714,7 @@ public class SceneManager : MonoBehaviour {
 
                     // Setting the flag to false and applying a low pass filter to remove any artifacts
                     thermalGenFlag = false;
-                    terrain.applySpikesFilter(0.005f);
+                    filterManager.applySpikesFilter(0.005f);
 
                     // Resetting the texture and refreshing mesh
                     terrain.applyProceduralTex(true, sandColor, sandLimit, sandStrength, sandCoverage, true, grassColor, grassStrength, true, snowColor, snowLimit, snowStrength, snowCoverage, true, rockColor, slopeLimit, slopeStrength, noiseTexValue);
@@ -838,18 +816,18 @@ public class SceneManager : MonoBehaviour {
                 windAltFlag = GUI.Toggle(new Rect(Screen.width - menuWidth + 15, 230 + offset, 175, 25), windAltFlag, "  Increase with altitude");
 
                 // Check for changes and, if any, change the wind parameters of the mesh
-                if (NStemp != windStrength.x || WEtemp != windStrength.y || Ctemp != windCover || Atemp != windAltFlag) terrain.setWindParam(windStrength, windCover, windAltFlag);
+                if (NStemp != windStrength.x || WEtemp != windStrength.y || Ctemp != windCover || Atemp != windAltFlag) erosionManager.setWindParam(windStrength, windCover, windAltFlag);
 
 
                 // Show/Hide button for the hydraulic erosion
                 if (!waterMenuFlag)
                 {
-                    if (GUI.Button(new Rect(Screen.width - menuWidth + 15, 265 + offset, 145, 25), "SHOW CONTROLS"))
+                    if (GUI.Button(new Rect(Screen.width - menuWidth + 15, 265 + offset - 50, 145, 25), "SHOW CONTROLS"))
                         waterMenuFlag = true;
                 }
                 else
                 {
-                    if (GUI.Button(new Rect(Screen.width - menuWidth + 15, 265 + offset, 145, 25), "HIDE CONTROLS"))
+                    if (GUI.Button(new Rect(Screen.width - menuWidth + 15, 265 + offset - 50, 145, 25), "HIDE CONTROLS"))
                         waterMenuFlag = false;
                 }
 
@@ -906,7 +884,7 @@ public class SceneManager : MonoBehaviour {
                 {
 
                     //Reinitialise erosion maps
-                    terrain.initHydraulicMaps();
+                    erosionManager.initHydraulicMaps();
                     //Refresh mesh
                     terrain.build();
                 }
@@ -931,11 +909,19 @@ public class SceneManager : MonoBehaviour {
         Mesh[] myMesh = terrain.myMesh;
         Mesh[] myWaterMesh = terrain.myWaterMesh;
 
+        //Adam J
+        //missing destruction of terrain and water GameObject
+        //I believe that destruction of meshes is not necessary
+
+
         for (int i = 0; i < 4; i++)
         {
 
             Destroy(myMesh[i]);
             Destroy(myWaterMesh[i]);
+
+            Destroy(terrain.myTerrain[i]);
+            Destroy(terrain.myWater[i]);
         }
     }
 

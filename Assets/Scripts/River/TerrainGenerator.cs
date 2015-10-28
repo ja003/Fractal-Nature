@@ -1,13 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class TerrainGenerator  {
+public class TerrainGenerator
+{
+
+    public FilterManager filterManager;
+    public ErosionManager erosionManager;
+
     //Terrain object and mesh
-    GameObject[] myTerrain;
+    public GameObject[] myTerrain;
     public Mesh[] myMesh;
 
     //Water object and mesh
-    GameObject[] myWater;
+    public GameObject[] myWater;
     public Mesh[] myWaterMesh;
 
     //Textures
@@ -51,10 +56,10 @@ public class TerrainGenerator  {
     int thermalOffset;
 
     //Hydraulic erosion maps
-    float[,] W; //water
-    float[,] S; //sediment
-    Vector2[,] V; //velocity
-    Vector4[,] F; //outflow flux
+    public float[,] W; //water
+    public float[,] S; //sediment
+    public Vector2[,] V; //velocity
+    public Vector4[,] F; //outflow flux
 
     //Diamond-square algorithm welding flags
     bool a_corner, b_corner, c_corner, d_corner;
@@ -66,10 +71,9 @@ public class TerrainGenerator  {
 
 
 
+    
 
-    //_________________________________
     //CLASS AND OBJECTS INITIALISATION
-    //---------------------------------
 
     public void initialise(int patch_size, int patch_count)
     {
@@ -190,7 +194,10 @@ public class TerrainGenerator  {
         //Call function to assign data structures to the meshes
         initMeshes();
         //Initialise hydraulic erosion model's maps
-        initHydraulicMaps();
+
+
+        //erosionManager = new ErosionManager(this);
+        //erosionManager.initHydraulicMaps();
     }
 
     public void build()
@@ -255,7 +262,7 @@ public class TerrainGenerator  {
             }
         }
 
-        Color markColor = new Color(1,0,0);
+        Color markColor = new Color(1, 0, 0);
         for (int x = 0; x <= 20; x++)
         {
             for (int z = 0; z <= 20; z++)
@@ -320,7 +327,7 @@ public class TerrainGenerator  {
             //TERRAIN
             myMesh[i] = new Mesh();
             myTerrain[i] = new GameObject();
-            myTerrain[i].name = "Terrain";
+            myTerrain[i].name = "Terrain [" + (int)(i + 1) + "/4]";
 
             myTerrain[i].AddComponent<MeshFilter>().mesh = myMesh[i];
             myTerrain[i].AddComponent<MeshRenderer>();
@@ -336,7 +343,7 @@ public class TerrainGenerator  {
             //WATER
             myWaterMesh[i] = new Mesh();
             myWater[i] = new GameObject();
-            myWater[i].name = "Water";
+            myWater[i].name = "Water [" + (int)(i + 1) + "/4]";
 
             myWater[i].AddComponent<MeshFilter>().mesh = myWaterMesh[i];
             myWater[i].AddComponent<MeshRenderer>();
@@ -373,14 +380,11 @@ public class TerrainGenerator  {
         }
     }
     */
+
+
     
-
-    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
         
-    //_________________________________
     //PROCEDURAL GENERATION ALGORITHMS
-    //---------------------------------
 
 
     //DIAMOND-SQUARE FRACTAL DISPLACEMENT MODEL
@@ -559,11 +563,10 @@ public class TerrainGenerator  {
             vertices[x, y - half_step].y = offset;
         }
     }
-    //^^^^^^^^^^^^^^^^^^^^^^^^
-
+    
 
     //HYDRAULIC EROSION MODEL
-
+    /*
     public void initHydraulicMaps()
     {
 
@@ -627,7 +630,7 @@ public class TerrainGenerator  {
         if (windStrength.y < 0) WEflag = -1;
         else if (windStrength.y > 0) WEflag = 1;
 
-        Debug.Log(SNflag);
+        //Debug.Log(SNflag);
 
 
         //Step 2: UPDATING OUTFLOW FLUX MAP
@@ -869,11 +872,9 @@ public class TerrainGenerator  {
         //Return wind potential force
         return strength * height * slope;
     }
-    //^^^^^^^^^^^^^^^^^^^^^^^^
-
-
+    */
     //THERMAL EROSION MODEL
-
+    /*
     public void applyThermalErosion(int iterations, float slopeMin, float c)
     {
 
@@ -935,12 +936,11 @@ public class TerrainGenerator  {
             thermalRecursion((int)lowestNeighbour.x, (int)lowestNeighbour.y, T, c);
         }
     }
-    //^^^^^^^^^^^^^^^^^^^^^^^^
-
-
-
+    */
+    
     //LOW-PASS / SPIKES REMOVAL FILTER MODEL
-
+    //moved to FilterManager
+    /*
     public void applySpikesFilter(float epsilon)
     {
 
@@ -1059,7 +1059,7 @@ public class TerrainGenerator  {
         }
     }
     //^^^^^^^^^^^^^^^^^^^^^^^^
-
+    */
 
 
     //PROCEDURAL TEXTURES MODEL
@@ -1195,14 +1195,11 @@ public class TerrainGenerator  {
         }
         proceduralTexture.Apply();
     }
-
-    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
+    
 
 
-    //________________________________________________
+    
     //MESH CONTROL  /  'ON-THE-FLY' CONTENT GENERATION
-    //------------------------------------------------
 
     public void goNorth(bool diSqFlag, float diSqScale, bool blurFlag, float blurring_factor, int kernel_size, bool thermalFlag, int thermalIterations, float thermalSlope, float thermalC)
     {
@@ -1263,12 +1260,12 @@ public class TerrainGenerator  {
         if (thermalFlag)
         {
 
-            localThermalErosion(new Vector3(0, 0, (patchCount - 1) * patchSize + (patchCount - 1) - thermalOffset), new Vector3(terrainSize - 1, 0, terrainSize - 1), thermalIterations, thermalSlope, thermalC);
-            applySpikesFilter(0.005f);
+            erosionManager.localThermalErosion(new Vector3(0, 0, (patchCount - 1) * patchSize + (patchCount - 1) - thermalOffset), new Vector3(terrainSize - 1, 0, terrainSize - 1), thermalIterations, thermalSlope, thermalC);
+            filterManager.applySpikesFilter(0.005f);
         }
 
         if (blurFlag)
-            applyGaussianBlur(blurring_factor, kernel_size, new Vector3(0, 0, (patchCount - 1) * patchSize + (patchCount - 1) - blurOffset), new Vector3(terrainSize - 1, 0, terrainSize - 1));
+            filterManager.applyGaussianBlur(blurring_factor, kernel_size, new Vector3(0, 0, (patchCount - 1) * patchSize + (patchCount - 1) - blurOffset), new Vector3(terrainSize - 1, 0, terrainSize - 1));
 
         build();
     }
@@ -1326,12 +1323,12 @@ public class TerrainGenerator  {
         if (thermalFlag)
         {
 
-            localThermalErosion(new Vector3(0, 0, 0), new Vector3(terrainSize - 1, 0, patchSize + thermalOffset), thermalIterations, thermalSlope, thermalC);
-            applySpikesFilter(0.005f);
+            erosionManager.localThermalErosion(new Vector3(0, 0, 0), new Vector3(terrainSize - 1, 0, patchSize + thermalOffset), thermalIterations, thermalSlope, thermalC);
+            filterManager.applySpikesFilter(0.005f);
         }
 
         if (blurFlag)
-            applyGaussianBlur(blurring_factor, kernel_size, new Vector3(0, 0, 0), new Vector3(terrainSize - 1, 0, patchSize + blurOffset));
+            filterManager.applyGaussianBlur(blurring_factor, kernel_size, new Vector3(0, 0, 0), new Vector3(terrainSize - 1, 0, patchSize + blurOffset));
 
         build();
     }
@@ -1389,12 +1386,12 @@ public class TerrainGenerator  {
         if (thermalFlag)
         {
 
-            localThermalErosion(new Vector3(0, 0, 0), new Vector3(patchSize + thermalOffset, 0, terrainSize - 1), thermalIterations, thermalSlope, thermalC);
-            applySpikesFilter(0.005f);
+            erosionManager.localThermalErosion(new Vector3(0, 0, 0), new Vector3(patchSize + thermalOffset, 0, terrainSize - 1), thermalIterations, thermalSlope, thermalC);
+            filterManager.applySpikesFilter(0.005f);
         }
 
         if (blurFlag)
-            applyGaussianBlur(blurring_factor, kernel_size, new Vector3(0, 0, 0), new Vector3(patchSize + blurOffset, 0, terrainSize - 1));
+            filterManager.applyGaussianBlur(blurring_factor, kernel_size, new Vector3(0, 0, 0), new Vector3(patchSize + blurOffset, 0, terrainSize - 1));
 
         build();
     }
@@ -1452,23 +1449,19 @@ public class TerrainGenerator  {
         if (thermalFlag)
         {
 
-            localThermalErosion(new Vector3((patchCount - 1) * patchSize + (patchCount - 1) - thermalOffset, 0, 0), new Vector3(terrainSize - 1, 0, terrainSize - 1), thermalIterations, thermalSlope, thermalC);
-            applySpikesFilter(0.005f);
+            erosionManager.localThermalErosion(new Vector3((patchCount - 1) * patchSize + (patchCount - 1) - thermalOffset, 0, 0), new Vector3(terrainSize - 1, 0, terrainSize - 1), thermalIterations, thermalSlope, thermalC);
+            filterManager.applySpikesFilter(0.005f);
         }
 
         if (blurFlag)
-            applyGaussianBlur(blurring_factor, kernel_size, new Vector3((patchCount - 1) * patchSize + (patchCount - 1) - blurOffset, 0, 0), new Vector3(terrainSize - 1, 0, terrainSize - 1));
+            filterManager.applyGaussianBlur(blurring_factor, kernel_size, new Vector3((patchCount - 1) * patchSize + (patchCount - 1) - blurOffset, 0, 0), new Vector3(terrainSize - 1, 0, terrainSize - 1));
 
         build();
     }
 
-    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
-
-    //________________
+    
+    
     //HELPER FUNCTIONS
-    //----------------
 
     private Vector3 getNormalAt(Vector3 vertex, int x, int z)
     {
@@ -1589,6 +1582,8 @@ public class TerrainGenerator  {
         return newPos;
     }
 
+    //findLowestNeighb
+    /*
     private Vector2 findLowestNeighb(int xVal, int zVal)
     {
 
@@ -1614,6 +1609,7 @@ public class TerrainGenerator  {
         //Return index of lowest neighbour as 2D vector
         return new Vector2(indexX, indexY);
     }
+    */
 
     private float findSlope(int xVal, int yVal)
     {
