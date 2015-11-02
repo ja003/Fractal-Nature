@@ -43,9 +43,9 @@ public class PlanePilot : MonoBehaviour {
 		//Rotate onto the World Matrix according to plane wing inclination
 		rotParam += Input.GetAxis("Horizontal");
 		transform.Rotate (Vector3.up * rotParam/100, Space.World);
-	
-		//Check for collision and update position
-		transform.position = GameObject.Find("GameObject").GetComponent<MainLoop>().terrain.collisionCheck(transform.position);
+
+        //Check for collision and update position
+		//transform.position = GameObject.Find("GameObject").GetComponent<SceneManager>().terrain.collisionCheck(transform.position);
 	}
 }
 

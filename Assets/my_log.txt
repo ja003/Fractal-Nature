@@ -32,6 +32,9 @@ decomposition of project
 Erosion and Filter functions moved to seperate classes
 
 
+2.11.2015
+fixed some bugs with airplane and on-flight generation
+implemented DigRiver function
 
 
 

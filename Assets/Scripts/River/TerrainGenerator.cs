@@ -3,9 +3,14 @@ using System.Collections;
 
 public class TerrainGenerator
 {
+    public Color redColor = new Color(1, 0, 0);
+    public Color greenColor = new Color(0, 1, 0);
+    public Color blueColor = new Color(0, 0, 1);
+    public Color pinkColor = new Color(1, 0, 1);
 
     public FilterManager filterManager;
     public ErosionManager erosionManager;
+    public RiverGenerator riverGenerator;
 
     //Terrain object and mesh
     public GameObject[] myTerrain;
@@ -33,7 +38,7 @@ public class TerrainGenerator
     int individualMeshSize;
 
     //Scaling vectors
-    public Vector3 scaleTerrain = new Vector3(800, 100, 800);
+    public Vector3 scaleTerrain = new Vector3(800, 150, 800);
     Vector2 uvScale;
     Vector3 vertsScale;
     Vector2 waterUvScale;
@@ -71,7 +76,7 @@ public class TerrainGenerator
 
 
 
-    
+
 
     //CLASS AND OBJECTS INITIALISATION
 
@@ -202,7 +207,6 @@ public class TerrainGenerator
 
     public void build()
     {
-
         //Function called to update the renderables when changes occur
 
         //Initialise scaling values according to terrain size and user-controlled sizing
@@ -263,13 +267,15 @@ public class TerrainGenerator
         }
 
         Color markColor = new Color(1, 0, 0);
-        for (int x = 0; x <= 20; x++)
+        for (int x = 0; x <= 30; x++)
         {
-            for (int z = 0; z <= 20; z++)
+            for (int z = 0; z <= 10; z++)
             {
-                //heightMap.SetPixel(x, z, markColor);
+                heightMap.SetPixel(x, z, redColor);
+                heightMap.SetPixel(z, x, blueColor);
             }
         }
+
 
         //Apply changes to heighmap teture
         heightMap.Apply();
@@ -292,6 +298,7 @@ public class TerrainGenerator
         endOf = verticesOut[3][individualMeshSize * individualMeshSize - 1];
         startOf = verticesOut[0][0];
         middleOf = (startOf + endOf) / 2;
+        
     }
 
     public void ColorPixels()
@@ -382,18 +389,16 @@ public class TerrainGenerator
     */
 
 
-    
-        
-    //PROCEDURAL GENERATION ALGORITHMS
 
+
+    //PROCEDURAL GENERATION ALGORITHMS
+    /**/
+    
 
     //DIAMOND-SQUARE FRACTAL DISPLACEMENT MODEL
 
     public void applyDiamondSquare(float scale)
     {
-
-        //Diamond-Square method's patch iterator 
-
         //Iterate through patches
         for (int x = 0; x < patchCount; x++)
         {
@@ -408,16 +413,23 @@ public class TerrainGenerator
 
                 //Set starting position and call main algorithm
                 Vector3 temp = new Vector3(x * patchSize + x, 0, z * patchSize + z);
+
+                
                 initDiamondSquare(temp, scale);
             }
         }
+    }
+
+    //modulus function
+    public int mod(int x, int m)
+    {
+        return (x % m + m) % m;
     }
 
     private void initDiamondSquare(Vector3 start, float scale)
     {
 
         //Main diamond-square algorithm
-
 
         //Size of step at iteration 0
         int stepSize = patchSize;
@@ -460,12 +472,12 @@ public class TerrainGenerator
             vertices[start_x, start_z + stepSize].y = offset;
         }
 
-
         //Start the main displacement loop
         while (stepSize > 1)
         {
+            //Debug.Log("step:" + stepSize);            //Halving the resolution each step
+            
 
-            //Halving the resolution each step
             int half_step = stepSize / 2;
 
             //Square step
@@ -489,6 +501,7 @@ public class TerrainGenerator
             //Halving the resolution and the roughness parameter
             stepSize = stepSize / 2;
             scale /= 2;
+
         }
 
 
@@ -563,7 +576,7 @@ public class TerrainGenerator
             vertices[x, y - half_step].y = offset;
         }
     }
-    
+
 
     //HYDRAULIC EROSION MODEL
     /*
@@ -937,7 +950,7 @@ public class TerrainGenerator
         }
     }
     */
-    
+
     //LOW-PASS / SPIKES REMOVAL FILTER MODEL
     //moved to FilterManager
     /*
@@ -1195,10 +1208,10 @@ public class TerrainGenerator
         }
         proceduralTexture.Apply();
     }
-    
 
 
-    
+
+
     //MESH CONTROL  /  'ON-THE-FLY' CONTENT GENERATION
 
     public void goNorth(bool diSqFlag, float diSqScale, bool blurFlag, float blurring_factor, int kernel_size, bool thermalFlag, int thermalIterations, float thermalSlope, float thermalC)
@@ -1459,9 +1472,26 @@ public class TerrainGenerator
         build();
     }
 
-    
-    
+
+
     //HELPER FUNCTIONS
+    public void ColorPixel(int x, int z, int offset, Color color)
+    {
+        for (int _x = x - offset; _x <= x + offset; _x++)
+        {
+            for (int _z = z - offset; _z <= z + offset; _z++)
+            {
+                if (CheckBounds(x, z))
+                    heightMap.SetPixel(_x, _z, color);
+            }
+        }
+
+        heightMap.Apply();
+    }
+    public bool CheckBounds(int x, int z)
+    {
+        return x > 0 && x < terrainSize - 1 && z > 0 && z < terrainSize - 1;
+    }
 
     private Vector3 getNormalAt(Vector3 vertex, int x, int z)
     {

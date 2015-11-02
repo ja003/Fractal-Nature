@@ -16,6 +16,7 @@ public class FilterManager
         terrainSize = terrain.terrainSize;
         vertices = terrain.vertices;
         terrain.filterManager = this;
+        
 
 
     }
@@ -63,6 +64,10 @@ public class FilterManager
     {
 
         //Gaussian filter main loop
+        //Debug.Log(blurring_factor);
+        //Debug.Log(kernel_size);
+        //Debug.Log(start);
+        //Debug.Log(end);
 
 
         //Build the kernel

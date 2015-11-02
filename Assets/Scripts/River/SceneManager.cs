@@ -115,15 +115,22 @@ public class SceneManager : MonoBehaviour
         // Initialise procedural texture variables
         terrain.applyProceduralTex(true, sandColor, sandLimit, sandStrength, sandCoverage, true, grassColor, grassStrength, true, snowColor, snowLimit, snowStrength, snowCoverage, true, rockColor, slopeLimit, slopeStrength, noiseTexValue);
 
+        
+
+        
+
         // Build mesh
         terrain.build();
 
-        //erosionManager has to be created when 
+        // erosionManager has to be created when
         erosionManager = new ErosionManager(terrain);
         erosionManager.initHydraulicMaps();
-        riverGenerator = new RiverGenerator(terrain);
         filterManager = new FilterManager(terrain);
+        //riverGenerator has to be after filterManager!
+        riverGenerator = new RiverGenerator(terrain);
 
+        //doesn't work well with on-fly generation
+        riverGenerator.PerserveMountains(5, 30);
     }
 
     // Main update loop
@@ -132,7 +139,10 @@ public class SceneManager : MonoBehaviour
 
         // Update camera position and 'on-the-fly' generation offset
         camera_position = GameObject.Find("Main Camera").transform.position;
-        cameraOffset = terrain.scaleTerrain.x / 3.5f;
+
+        //sometimes it alerts null reference
+        if(terrain.scaleTerrain.x != null)
+            cameraOffset = terrain.scaleTerrain.x / 3.5f;
 
         // Lock/Unlock mouse-look view if 'C' key is pressed
         if (!flightModeFlag)
@@ -148,10 +158,26 @@ public class SceneManager : MonoBehaviour
         // On-the-fly generation - flag check -> boundary check -> function call.
         if (infiniteTerrain)
         {
-            if (camera_position.z > terrain.endOf.z - cameraOffset) terrain.goNorth(diSqFlag, diSqStrength, gaussFlag, gaussAmount, kernelSize, thermalFlag, thermalIterations, thermalSlope, thermalC);
-            if (camera_position.z < terrain.startOf.z + cameraOffset) terrain.goSouth(diSqFlag, diSqStrength, gaussFlag, gaussAmount, kernelSize, thermalFlag, thermalIterations, thermalSlope, thermalC);
-            if (camera_position.x < terrain.startOf.x + cameraOffset) terrain.goWest(diSqFlag, diSqStrength, gaussFlag, gaussAmount, kernelSize, thermalFlag, thermalIterations, thermalSlope, thermalC);
-            if (camera_position.x > terrain.endOf.x - cameraOffset) terrain.goEast(diSqFlag, diSqStrength, gaussFlag, gaussAmount, kernelSize, thermalFlag, thermalIterations, thermalSlope, thermalC);
+            if (camera_position.z > terrain.endOf.z - cameraOffset)
+            {
+                terrain.goNorth(diSqFlag, diSqStrength, gaussFlag, gaussAmount, kernelSize, thermalFlag, thermalIterations, thermalSlope, thermalC);
+                //riverGenerator.PerserveMountains(5, 30);
+            }
+            if (camera_position.z < terrain.startOf.z + cameraOffset)
+            {
+                terrain.goSouth(diSqFlag, diSqStrength, gaussFlag, gaussAmount, kernelSize, thermalFlag, thermalIterations, thermalSlope, thermalC);
+                //riverGenerator.PerserveMountains(5, 30);
+            }
+            if (camera_position.x < terrain.startOf.x + cameraOffset)
+            {
+                terrain.goWest(diSqFlag, diSqStrength, gaussFlag, gaussAmount, kernelSize, thermalFlag, thermalIterations, thermalSlope, thermalC);
+                //riverGenerator.PerserveMountains(5, 30);
+            }
+            if (camera_position.x > terrain.endOf.x - cameraOffset)
+            {
+                terrain.goEast(diSqFlag, diSqStrength, gaussFlag, gaussAmount, kernelSize, thermalFlag, thermalIterations, thermalSlope, thermalC);
+                //riverGenerator.PerserveMountains(5, 30);
+            }
         }
 
         // Thermal erosion animation flag check
@@ -248,7 +274,7 @@ public class SceneManager : MonoBehaviour
 
             // RIVER MENU
             offset = 135;
-            Rect riverMenuRectangle = new Rect(Screen.width - menuWidth * 2, offset, menuWidth - rightOffset, 95);
+            Rect riverMenuRectangle = new Rect(0, 0, menuWidth - 2*rightOffset, 30);
             GUI.Box(riverMenuRectangle, "River");
 
 
@@ -256,14 +282,13 @@ public class SceneManager : MonoBehaviour
             // Apply button
             if (GUI.Button(riverMenuRectangle, "MAKE RIVER"))
             {
-
-                // Apply algorithm and reset procedural texture
-                //terrain.GenerateRiver();
-
                 riverGenerator.GenerateRiver();
+            }
 
-                //terrain.applyProceduralTex(true, sandColor, sandLimit, sandStrength, sandCoverage, true, grassColor, grassStrength, true, snowColor, snowLimit, snowStrength, snowCoverage, true, rockColor, slopeLimit, slopeStrength, noiseTexValue);
-                //terrain.build();
+            Rect mountainRectangle = new Rect(0,30, menuWidth - 2*rightOffset, 30);
+            if (GUI.Button(mountainRectangle, "MAKE MOUNTAIN"))
+            {
+                riverGenerator.PerserveMountains(5,30);
             }
 
             offset = 135; // Y offset value
@@ -560,8 +585,10 @@ public class SceneManager : MonoBehaviour
                 }
 
             offset += 50; // Y offset value
+            Vector3 scaleTemp = new Vector3(1,1,1);
 
-            Vector3 scaleTemp = terrain.scaleTerrain;
+            if (terrain.scaleTerrain != null)
+                scaleTemp  = terrain.scaleTerrain;
 
             // Scaling parameters linked to sliders
             terrain.scaleTerrain.x = GUI.HorizontalSlider(new Rect(Screen.width - menuWidth + 10, 60 + offset, menuWidth - 160 - rightOffset, 20), terrain.scaleTerrain.x, 20, 1400);
