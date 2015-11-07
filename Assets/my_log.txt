@@ -1,6 +1,34 @@
-18.10.2015
+-----6.11.2015-----
+implemented FloodFromLowestRegion algorithm
+process
+1)find point on terrain with lowest sum of heights from its nighbourhood 
+2)run flood algorithm with increasing threshold until it reaches 2 different sides
+3)connect found paths
+
+
+-----2.11.2015-----
+fixed some bugs with airplane and on-flight generation
+implemented DigRiver function
+
+-----28.10.2015-----
+decomposition of project
+Erosion and Filter functions moved to seperate classes
+
+-----23.10.2015-----
+implementing BestDirectionRiver algorithm based on finding highest 
+and lowest vertex on sides and conntecting them
+river track is curved by finding lowest points in area
+around the line connecting found points
+
+-----19.10.2015-----
+code decomposition
+try to decompose Scripts into more classes
+seperated the original and created my own folder
+
+-----18.10.2015-----
 first very simple implementation
 -added menu button to create river (no user parameters)
+
 -1)
 river goes through midle of terrain
 fixed river width
@@ -14,31 +42,6 @@ problems:
 -texture on modified terrain does not look good (probably due to 
 not modifiing UVs)
 -on fly generating terrain destroys part of the river
-
-
-19.10.2015
-code decomposition
-try to decompose Scripts into more classes
-seperated the original and created my own folder
-
-23.10.2015
-implementing BestDirectionRiver algorithm based on finding highest 
-and lowest vertex on sides and conntecting them
-river track is curved by finding lowest points in area
-around the line connecting found points
-
-28.10.2015
-decomposition of project
-Erosion and Filter functions moved to seperate classes
-
-
-2.11.2015
-fixed some bugs with airplane and on-flight generation
-implemented DigRiver function
-
-
-
-
 
 
 

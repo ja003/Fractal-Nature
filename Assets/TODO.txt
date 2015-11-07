@@ -1,28 +1,12 @@
+-----6.11.2015-----
+prefer longer river [L->R / U->D, ne L->U,...]
 
-18.10.2015
-read some existing methods and approaches and try to implement 
-some of them
+use 8 neigbourhood
 
-19.10.2015
-ask if its a good idea to decompose the code or it is okay to leave it as 
-messy as it is 
+when algorithm finds edge, stop searching on that side
 
-+ok
 
-22.10.2015
-improve BestDirectionRiver algorithm
--user can generate different tracks and then confirm one, which will 
-be created
--implement river coridor function
-
-28.10.2015
-rework terrain generation algorithm to produce more realistic 
-environment by partitioning into regions with different hight
-parameters
-
-+solved by addidng function: "Perserve mountains"
-
-2.11.2015
+-----2.11.2015-----
 make number of mountain to perserve optionable
 
 smooth peeks of mountain
@@ -32,6 +16,33 @@ original height of processed vertex
 
 fix connecting of 2 parts of the river (makes 2x deep dig on intersection 
  - shoukd be solved by previously metioned depth function)
+ 
+-----28.10.2015-----
+rework terrain generation algorithm to produce more realistic 
+environment by partitioning into regions with different hight
+parameters
+
++solved by addidng function: "Perserve mountains"
+ 
+-----22.10.2015-----
+improve BestDirectionRiver algorithm
+-user can generate different tracks and then confirm one, which will 
+be created
+-implement river coridor function
+
+
+-----19.10.2015-----
+ask if its a good idea to decompose the code or it is okay to leave it as 
+messy as it is 
+
++ok
+
+-----18.10.2015-----
+read some existing methods and approaches and try to implement 
+some of them
+
+
+
  
  
 
