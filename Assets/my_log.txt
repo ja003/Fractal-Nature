@@ -1,9 +1,18 @@
+-----13.11.2015-----
+improved DigRiver algorithm
+	expects the path to be composed only from points connected 
+	horizontally/diagonally/vertically (not for example [0,0] -> [5,1])
+	
+	uses sinc function to shape the corridor
+	then it smoothes it using median filter (doesn't look very good)
+
+
 -----6.11.2015-----
 implemented FloodFromLowestRegion algorithm
 process
-1)find point on terrain with lowest sum of heights from its nighbourhood 
-2)run flood algorithm with increasing threshold until it reaches 2 different sides
-3)connect found paths
+	1)find point on terrain with lowest sum of heights from its nighbourhood 
+	2)run flood algorithm with increasing threshold until it reaches 2 different sides
+	3)connect found paths
 
 
 -----2.11.2015-----
