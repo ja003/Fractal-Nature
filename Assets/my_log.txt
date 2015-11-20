@@ -1,5 +1,9 @@
 -----13.11.2015-----
 improved DigRiver algorithm
+	-still has corner check bug
+
+-----13.11.2015-----
+improved DigRiver algorithm
 	expects the path to be composed only from points connected 
 	horizontally/diagonally/vertically (not for example [0,0] -> [5,1])
 	

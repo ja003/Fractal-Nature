@@ -45,25 +45,36 @@ public class RiverGenerator
 
         //BestDirectionRiver();
 
-
+        //ClearTerrain();
         
         List<Vertex> tempList = new List<Vertex>();
         tempList.Add(new Vertex(30, 30));
-        tempList.Add(new Vertex(60, 60));
-        tempList.Add(new Vertex(90, 90));
-        tempList.Add(new Vertex(120, 90));
-        tempList.Add(new Vertex(150, 90));
-        tempList.Add(new Vertex(180, 90));
-        tempList.Add(new Vertex(180, 120));
+        tempList.Add(new Vertex(100, 30));
+        tempList.Add(new Vertex(150, 30));
+        tempList.Add(new Vertex(150, 150));
+        tempList.Add(new Vertex(100, 100));
+        tempList.Add(new Vertex(80, 120));
+        tempList.Add(new Vertex(60, 100));
 
         //DigRiver(tempList, 10, 0.4f);
 
         FloodFromLowestPoint();
-        terrain.build();
+        //terrain.build();
 
         //Test();
 
 
+    }
+
+    public void ClearTerrain()
+    {
+        for(int x = 0; x < terrainSize; x++)
+        {
+            for (int z = 0; z < terrainSize; z++)
+            {
+                vertices[x, z].y = 0;
+            }
+        }
     }
 
     public class FloodNode
@@ -155,8 +166,8 @@ public class RiverGenerator
         reachableNodes.Add(new FloodNode(start, 0));
         float threshold = step;
 
-        int gridStep = 5;
-        int borderOffset = gridStep * 2;
+        int gridStep = 20;
+        int borderOffset = gridStep+2;
 
         int leftEndIndex = 0; ;
         int rightEndIndex = 0;
@@ -265,14 +276,21 @@ public class RiverGenerator
 
         List<Vertex> finalPath = new List<Vertex>();
 
+
+        //skip some vertices - !BAD - vertices angles arent 45
+
         foreach (Vertex v in path1)
         {
-            finalPath.Add(v);
+            //if(path1.IndexOf(v)%5 == 0 )
+                finalPath.Add(v);
         }
         foreach (Vertex v in path2)
         {
-            finalPath.Add(v);
+            //if (path2.IndexOf(v)%5 == 0)
+                finalPath.Add(v);
         }
+
+        ClearTerrain();
 
 
         DigRiver(finalPath, 10, 0.45f);
@@ -287,51 +305,94 @@ public class RiverGenerator
 
     public void DigRiver(List<Vertex> path, int width, float depthFactor)
     {
-        float[,] depthField = new float[terrainSize, terrainSize];
+        float[,] depthField = new float[terrainSize, terrainSize]; //depth to dig
+        float[,] distField = new float[terrainSize, terrainSize]; //distance from line
+
         for (int x = 0; x < terrainSize; x++)
         {
             for (int z = 0; z < terrainSize; z++)
             {
-                depthField[x, z] = 666;
+                depthField[x, z] = 666;//mark
+                distField[x, z] = 666;//mark
             }
         }
+        int widthFactor = 1;
 
         for (int i = 0; i < path.Count - 1; i++)
         {
             Vertex v1 = path[i];
             Vertex v2 = path[i + 1];
+            int ManhattanDistance = GetManhattanDistance(v1, v2);
 
             Vertex center = v1;
             int sgnX = Math.Sign(v2.x - v1.x);
             int sgnZ = Math.Sign(v2.z - v1.z);
             int counter = 0;
+            
+
             while (!v2.CoordinatesEquals(center))
             {
-                for (int w = -2 * width; w < 2 * width; w++)
+                if(counter > ManhattanDistance+1)
+                {
+                    Debug.Log(v1 + " to " + v2);
+                    Debug.Log("failed to reach v2");
+                    break;
+                }
+                if(sgnX == 0 && sgnZ == 0)
+                {
+                    Debug.Log("v1 == v2");
+                    break;
+                }
+                
+                for (int w = -2*widthFactor * width; w < 2*widthFactor * width; w++)
                 {
                     Vertex vert = new Vertex(center.x + sgnZ * w, center.z + -sgnX * w);
                     if (CheckBounds(vert.x, vert.z))
                     {
                         float distance = GetDistanceFromLine(vert, v1, v2);
+
+                        //if (i == 10)
+                            //Debug.Log(i + ":" + distance);
+
+                        //if(counter%2 == 0)
+                        //{
+                        //    distance -= 0.01f;
+                        //}
+
                         float depth = 0;
 
                         if (distance == 0) //sinc is not defined at 0
                             distance += 0.01f;
-                        depth = (float)(-depthFactor * Math.Sin((distance / (width / Math.PI))) / (distance / Math.PI));
-                        
+                        depth = Sinc(distance, width, depthFactor);
+
 
                         if (depthField[vert.x, vert.z] == 666) //hasnt been modified yet
+                        {
                             depthField[vert.x, vert.z] = depth;
+                            distField[vert.x, vert.z] = distance;
+                        }
                         else if (depthField[vert.x, vert.z] != 666) //has been modified but I can dig it
-                            depthField[vert.x, vert.z] = Math.Min(depthField[vert.x, vert.z], depth);
+                        {
+                            if (distance < distField[vert.x, vert.z])
+                            {
+                                //depthField[vert.x, vert.z] = Math.Min(depthField[vert.x, vert.z], depth);
+                                depthField[vert.x, vert.z] = depth;
+                                distField[vert.x, vert.z] = distance;
+                            }
+                            //depthField[vert.x, vert.z] = (depthField[vert.x, vert.z] + depth)/2;
+                        }
+                            
                     }
                 }
                 if (sgnX == 0 || sgnZ == 0)
-                    center = new Vertex(center.x + sgnX, center.z + sgnZ);
-                else //moving diagonally
+                {
+                    center.Rewrite(center.x + sgnX, center.z + sgnZ,center.height);
+                    //center = new Vertex(center.x + sgnX, center.z + sgnZ);
+                }
+                else //moving diagonally //we cant move center diagonally or else it would skip half points
                 {
                     counter++;
-                    if (counter % 2 == 0) //we cant move center diagonally or else it would skip half points
+                    if (counter % 2 == 0)
                         center = new Vertex(center.x, center.z + sgnZ);
                     else
                         center = new Vertex(center.x + sgnX, center.z);
@@ -343,26 +404,39 @@ public class RiverGenerator
         for (int i = 1; i < path.Count - 1; i++)
         {
             Vertex corner = path[i];
-            for (int x = corner.x - 2 * width; x < corner.x + 2 * width; x++)
+            for (int x = corner.x - widthFactor * 2*width; x < corner.x + widthFactor * 2*width; x++)
             {
-                for (int z = corner.z - 2 * width; z < corner.z + 2 * width; z++)
+                for (int z = corner.z - widthFactor * 2*width; z < corner.z + widthFactor * 2*width; z++)
                 {
                     if (CheckBounds(x, z))
                     {
                         float distance = GetDistance(corner, new Vertex(x, z));
-                        if (distance < 2 * width)
+                        //if (i == 10)
+                            //Debug.Log(i+":"+distance);
+
+                        if (distance < widthFactor * 2* width)
                         {
                             float depth = 0;
 
                             if (distance == 0) //sinc is not defined at 0
                                 distance += 0.01f;
-                            depth = (float)(-depthFactor * Math.Sin((distance / (width / Math.PI))) / (distance / Math.PI));
-                            
+
+                            depth = Sinc(distance,width,depthFactor);
+
 
                             if (depthField[x, z] == 666) //hasnt been modified yet
+                            {
                                 depthField[x, z] = depth;
+                                //Debug.Log(depth);
+                            }
                             else if (depthField[x, z] != 666) //has been modified but I can dig it
+                            {
                                 depthField[x, z] = Math.Min(depthField[x, z], depth);
+                                //depthField[x, z] = (depthField[x, z] + depth)/2; //blbost
+                                //ColorPixel(x, z, 1,redColor);
+                                //Debug.Log(x + "," + z);
+                            }
+
                         }
                     }
                 }
@@ -375,12 +449,55 @@ public class RiverGenerator
             for (int z = 0; z < terrainSize; z++)
             {
                 if (depthField[x, z] != 666)
+                {
                     vertices[x, z].y += depthField[x, z] * depthFactor;
+                    
+                    //ColorPixel(x, z, 0, redColor);
+                }
             }
         }
 
+        terrain.build();
+
+
+        ColorPixel(20, 20, 0, greenColor);
+        //color digging
+        /*
+        for (int x = 0; x < terrainSize; x++)
+        {
+            for (int z = 0; z < terrainSize; z++)
+            {
+                if (depthField[x, z] != 666)
+                {
+                    //vertices[x, z].y += depthField[x, z] * depthFactor;
+                    ColorPixel(x, z, 0, redColor);
+                }
+            }
+        }*/
+
+
         Vector3[,] verticesCopy = vertices; //copy for not overwriting new values
         //smooth it
+
+        //selective smooth
+        /*
+        for (int x = 0; x < terrainSize; x++)
+        {
+            for (int z = 0; z < terrainSize; z++)
+            {
+                if (CheckBounds(x + 1, z) && CheckBounds(x - 1, z))
+                {
+                    if (verticesCopy[x, z].y < (verticesCopy[x + 1, z].y + verticesCopy[x - 1, z].y) / 2)
+                    {
+                        vertices[x, z].y = (verticesCopy[x + 1, z].y + verticesCopy[x - 1, z].y) / 2;
+                    }
+                }
+            }
+        }
+        
+        */
+
+        /*
         for (int x = 0; x < terrainSize; x++)
         {
             for (int z = 0; z < terrainSize; z++)
@@ -389,7 +506,13 @@ public class RiverGenerator
                     vertices[x, z].y = GetMedian(x,z,3, verticesCopy);
             }
         }
+        */
 
+            }
+
+    public float Sinc(float x, float width, float depthFactor)
+    {
+        return (float)(-depthFactor * Math.Sin((x / (width / Math.PI))) / (x / Math.PI));
     }
 
     public float GetMedian(int _x, int _z, int regionSize, Vector3[,] vertices)
@@ -555,6 +678,7 @@ public class RiverGenerator
         terrain.build();
     }
 
+    //obsolete
     public void DigRiver(Vertex v1, Vertex v2, float width, float depthFactor)
     {
         //general line equation parameters
@@ -819,6 +943,11 @@ public class RiverGenerator
     public float GetDistance(Vertex v1, Vertex v2)
     {
         return (float)Math.Sqrt((v1.x - v2.x) * (v1.x - v2.x) + (v1.z - v2.z) * (v1.z - v2.z));
+    }
+
+    public int GetManhattanDistance(Vertex v1, Vertex v2)
+    {
+        return Math.Abs(v1.x - v2.x) + Math.Abs(v1.z - v2.z);
     }
 
     public bool IsInRange(Vertex vert, Vertex center, int radius)

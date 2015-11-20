@@ -1,3 +1,11 @@
+-----20.11.2015-----
+fix FloodFromLowestPoint 
+	-remove borderOffset so it reaches exactly to the border
+	-or at least connect it with border
+	
+fix DigRiver
+	-corner check
+
 -----6.11.2015-----
 prefer longer river [L->R / U->D, ne L->U,...]
 
