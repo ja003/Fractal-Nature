@@ -1,3 +1,8 @@
+-----23.11.2015-----
+improved digriver algorithm
+	-corner fails, probably due to incorrect vertices in path
+	
+
 -----13.11.2015-----
 improved DigRiver algorithm
 	-still has corner check bug

@@ -49,12 +49,16 @@ public class RiverGenerator
         
         List<Vertex> tempList = new List<Vertex>();
         tempList.Add(new Vertex(30, 30));
-        tempList.Add(new Vertex(100, 30));
-        tempList.Add(new Vertex(150, 30));
-        tempList.Add(new Vertex(150, 150));
-        tempList.Add(new Vertex(100, 100));
-        tempList.Add(new Vertex(80, 120));
-        tempList.Add(new Vertex(60, 100));
+        tempList.Add(new Vertex(60,60));
+        tempList.Add(new Vertex(90,90));
+        tempList.Add(new Vertex(130,90));
+        tempList.Add(new Vertex(150,90));
+        tempList.Add(new Vertex(120,60));
+        tempList.Add(new Vertex(90,30));
+        //tempList.Add(new Vertex(150, 150));
+        //tempList.Add(new Vertex(100, 100));
+        //tempList.Add(new Vertex(80, 120));
+        //tempList.Add(new Vertex(60, 100));
 
         //DigRiver(tempList, 10, 0.4f);
 
@@ -276,22 +280,71 @@ public class RiverGenerator
 
         List<Vertex> finalPath = new List<Vertex>();
 
+        //connect with border
+        Vertex connectStart = new Vertex(0,0);
+        Vertex connectEnd = new Vertex(0, 0);
 
-        //skip some vertices - !BAD - vertices angles arent 45
+        //connect path1 and path 2
+        foreach (Vertex v in path2)
+        {
+            path1.Add(v);
+        }
+
+
+        if (path1.Count != 0)
+        {
+            Debug.Log(path1[0]);
+            Debug.Log(path1[path1.Count - 1]);
+
+            if (reachBot && reachTop)
+            {
+                if (path1[0].z > path1[path1.Count - 1].z)
+                {
+                    connectStart = new Vertex(path1[0].x, terrainSize);
+                    connectEnd = new Vertex(path1[path1.Count - 1].x, 0);
+                }
+                else
+                {
+                    connectStart = new Vertex(path1[0].x, 0);
+                    connectEnd = new Vertex(path1[path1.Count - 1].x, terrainSize);
+
+                }
+            }
+            else
+            {
+                if (path1[0].x > path1[path1.Count - 1].x)
+                {
+                    connectStart = new Vertex(terrainSize, path1[0].z);
+                    connectEnd = new Vertex(0, path1[path1.Count - 1].z);
+                }
+                else
+                {
+                    connectStart = new Vertex(0, path1[0].z);
+                    connectEnd = new Vertex(terrainSize, path1[path1.Count - 1].z);
+
+                }
+            }
+        }
+        if (!(connectStart.x == 0 && connectStart.z == 0))
+        {
+            Debug.Log("start: " + connectStart);
+            finalPath.Add(connectStart);
+        }
 
         foreach (Vertex v in path1)
         {
-            //if(path1.IndexOf(v)%5 == 0 )
                 finalPath.Add(v);
         }
-        foreach (Vertex v in path2)
+
+        if (!(connectEnd.x == 0 && connectEnd.z == 0))
         {
-            //if (path2.IndexOf(v)%5 == 0)
-                finalPath.Add(v);
+            Debug.Log("end: " + connectEnd);
+            finalPath.Add(connectEnd);
         }
 
-        ClearTerrain();
+        //ClearTerrain();
 
+        
 
         DigRiver(finalPath, 10, 0.45f);
         foreach (Vertex v in finalPath)
@@ -301,6 +354,7 @@ public class RiverGenerator
             //if (finalPath.IndexOf(v) != finalPath.Count-1)
             //DigRiver(v, finalPath[finalPath.IndexOf(v) + 1], 5, 0.2f);
         }
+        Debug.Log("-------");
     }
 
     public void DigRiver(List<Vertex> path, int width, float depthFactor)
@@ -330,7 +384,8 @@ public class RiverGenerator
             int counter = 0;
             
 
-            while (!v2.CoordinatesEquals(center))
+            //
+            while (!v2.CoordinatesEquals(center, 0))
             {
                 if(counter > ManhattanDistance+1)
                 {
@@ -386,24 +441,31 @@ public class RiverGenerator
                 }
                 if (sgnX == 0 || sgnZ == 0)
                 {
-                    center.Rewrite(center.x + sgnX, center.z + sgnZ,center.height);
-                    //center = new Vertex(center.x + sgnX, center.z + sgnZ);
+                    //center.Rewrite(center.x + sgnX, center.z + sgnZ,center.height);
+                    center = new Vertex(center.x + sgnX, center.z + sgnZ);
                 }
                 else //moving diagonally //we cant move center diagonally or else it would skip half points
                 {
                     counter++;
                     if (counter % 2 == 0)
+                    {
+                        //center.Rewrite(center.x, center.z + sgnZ, center.height);// = 
                         center = new Vertex(center.x, center.z + sgnZ);
+                    }
                     else
+                    {
+                        //center.Rewrite(center.x + sgnX, center.z, center.height);// 
                         center = new Vertex(center.x + sgnX, center.z);
+                    }
                 }
             }
 
         }
         //fix corners
-        for (int i = 1; i < path.Count - 1; i++)
+        for (int i = 0; i < path.Count; i++)
         {
             Vertex corner = path[i];
+            //Debug.Log(corner);
             for (int x = corner.x - widthFactor * 2*width; x < corner.x + widthFactor * 2*width; x++)
             {
                 for (int z = corner.z - widthFactor * 2*width; z < corner.z + widthFactor * 2*width; z++)
@@ -427,16 +489,22 @@ public class RiverGenerator
                             if (depthField[x, z] == 666) //hasnt been modified yet
                             {
                                 depthField[x, z] = depth;
+                                ColorPixel(x, z, 1, greenColor);
                                 //Debug.Log(depth);
                             }
                             else if (depthField[x, z] != 666) //has been modified but I can dig it
                             {
-                                depthField[x, z] = Math.Min(depthField[x, z], depth);
+                                //depthField[x, z] = Math.Min(depthField[x, z], depth);
                                 //depthField[x, z] = (depthField[x, z] + depth)/2; //blbost
                                 //ColorPixel(x, z, 1,redColor);
                                 //Debug.Log(x + "," + z);
+
                             }
 
+                        }
+                        else
+                        {
+                            //ColorPixel(x, z, 0, greenColor);
                         }
                     }
                 }
@@ -452,7 +520,6 @@ public class RiverGenerator
                 {
                     vertices[x, z].y += depthField[x, z] * depthFactor;
                     
-                    //ColorPixel(x, z, 0, redColor);
                 }
             }
         }
@@ -462,7 +529,7 @@ public class RiverGenerator
 
         ColorPixel(20, 20, 0, greenColor);
         //color digging
-        /*
+        
         for (int x = 0; x < terrainSize; x++)
         {
             for (int z = 0; z < terrainSize; z++)
@@ -470,13 +537,13 @@ public class RiverGenerator
                 if (depthField[x, z] != 666)
                 {
                     //vertices[x, z].y += depthField[x, z] * depthFactor;
-                    ColorPixel(x, z, 0, redColor);
+                    //ColorPixel(x, z, 0, redColor);
                 }
             }
-        }*/
+        }
 
 
-        Vector3[,] verticesCopy = vertices; //copy for not overwriting new values
+        //Vector3[,] verticesCopy = vertices; //copy for not overwriting new values
         //smooth it
 
         //selective smooth
@@ -508,7 +575,7 @@ public class RiverGenerator
         }
         */
 
-            }
+    }
 
     public float Sinc(float x, float width, float depthFactor)
     {
@@ -1036,6 +1103,11 @@ public class RiverGenerator
         public bool CoordinatesEquals(Vertex v2)
         {
             return x == v2.x && z == v2.z;
+        }
+
+        public bool CoordinatesEquals(Vertex v2, int e)
+        {
+            return x - e <= v2.x && v2.x <= x + e && z - e <= v2.z && v2.z <= z + e;
         }
 
         /* not sure if good/necessary

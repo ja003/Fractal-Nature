@@ -1,3 +1,7 @@
+-----23.11.2015-----
+algorithm finds path not only with orthogonal or diagonal vertices
+	=> causes error
+
 -----20.11.2015-----
 fix FloodFromLowestPoint 
 	-remove borderOffset so it reaches exactly to the border
