@@ -1,3 +1,15 @@
+-----28.11.2015-----
+improved DigRiver algorithm (currently called DigRiver3)
+new feature
+	determines whether point belongs to the current part of path
+fixed corner check error
+implemented DistortPath
+	randomly moves points of path by given parameter
+	! can cause incorrect "order/position" of points in path
+	! better solve this by editing Flood algorithm to choose not
+	 only from 8-neighbourhood (might cost much more!)
+
+
 -----23.11.2015-----
 improved digriver algorithm
 	-corner fails, probably due to incorrect vertices in path

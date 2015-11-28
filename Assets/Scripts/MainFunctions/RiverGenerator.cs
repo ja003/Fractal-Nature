@@ -49,23 +49,30 @@ public class RiverGenerator
         
         List<Vertex> tempList = new List<Vertex>();
         tempList.Add(new Vertex(30, 30));
-        tempList.Add(new Vertex(60,60));
-        tempList.Add(new Vertex(90,90));
-        tempList.Add(new Vertex(130,90));
-        tempList.Add(new Vertex(150,90));
-        tempList.Add(new Vertex(120,60));
-        tempList.Add(new Vertex(90,30));
-        //tempList.Add(new Vertex(150, 150));
-        //tempList.Add(new Vertex(100, 100));
-        //tempList.Add(new Vertex(80, 120));
-        //tempList.Add(new Vertex(60, 100));
+        tempList.Add(new Vertex(60,30));
+        tempList.Add(new Vertex(20,70));
+        tempList.Add(new Vertex(30,80));
+        tempList.Add(new Vertex(40,90));
+        tempList.Add(new Vertex(20,150));
+        tempList.Add(new Vertex(35,140));
+        tempList.Add(new Vertex(40,135));
+        tempList.Add(new Vertex(55,120));
 
-        //DigRiver(tempList, 10, 0.4f);
+        //DigRiver3(tempList, 10, 0.4f);
 
         FloodFromLowestPoint();
         //terrain.build();
 
         //Test();
+
+        foreach (Vertex v in tempList)
+        {
+            //Debug.Log(v);
+            //ColorPixel(v.x, v.z, 1, blueColor);
+            //if (finalPath.IndexOf(v) != finalPath.Count-1)
+            //DigRiver(v, finalPath[finalPath.IndexOf(v) + 1], 5, 0.2f);
+        }
+        Debug.Log("-------");
 
 
     }
@@ -344,9 +351,9 @@ public class RiverGenerator
 
         //ClearTerrain();
 
-        
+        DistortPath(finalPath, 5);
 
-        DigRiver(finalPath, 10, 0.45f);
+        DigRiver3(finalPath, 10, 0.45f);
         foreach (Vertex v in finalPath)
         {
             //Debug.Log(v);
@@ -354,7 +361,484 @@ public class RiverGenerator
             //if (finalPath.IndexOf(v) != finalPath.Count-1)
             //DigRiver(v, finalPath[finalPath.IndexOf(v) + 1], 5, 0.2f);
         }
-        Debug.Log("-------");
+    }
+
+    public void DistortPath(List<Vertex> path, int maxDistort)
+    {
+        System.Random rnd = new System.Random();
+        foreach (Vertex v in path)
+        {
+            int distortX = rnd.Next(-maxDistort, maxDistort);
+            int distortZ = rnd.Next(-maxDistort, maxDistort);
+            v.Rewrite(v.x + distortX, v.z + distortZ, v.height);
+        }
+    }
+
+    public void DigRiver3(List<Vertex> path, int width, float depthFactor)
+    {
+        float[,] depthField = new float[terrainSize, terrainSize]; //depth to dig
+        float[,] distField = new float[terrainSize, terrainSize]; //distance from line
+        float[,] pathMark = new float[terrainSize, terrainSize]; //path number which will effect the vertex
+
+        for (int x = 0; x < terrainSize; x++)
+        {
+            for (int z = 0; z < terrainSize; z++)
+            {
+                depthField[x, z] = 666;//mark
+                distField[x, z] = 666;//mark
+            }
+        }
+        int widthFactor = 2;
+
+        for (int i = 0; i < path.Count - 1; i++)
+        {
+            Vertex v1 = path[i];
+            Vertex v2 = path[i + 1];
+
+            Vertex topLeftCorner = new Vertex(0, 0);
+            Vertex botRightCorner = new Vertex(0, 0);
+            //evaluate position of starting vertex
+            if (v1.x < v2.x)
+            {
+                topLeftCorner.x = v1.x - width * widthFactor;
+                botRightCorner.x = v2.x + width * widthFactor;
+            }
+            else
+            {
+                topLeftCorner.x = v2.x - width * widthFactor;
+                botRightCorner.x = v1.x + width * widthFactor;
+            }
+            if (v1.z < v2.z)
+            {
+                topLeftCorner.z = v2.z + width * widthFactor;
+                botRightCorner.z = v1.z - width * widthFactor;
+            }
+            else
+            {
+                topLeftCorner.z = v1.z + width * widthFactor;
+                botRightCorner.z = v2.z - width * widthFactor;
+            }
+
+            if (topLeftCorner.Equals(botRightCorner))
+            {
+                Debug.Log("same vertices");
+                break;
+            }
+
+            for (int x = topLeftCorner.x; x < botRightCorner.x; x++)
+            {
+                for (int z = topLeftCorner.z; z > botRightCorner.z; z--)
+                {
+                    
+                    if (CheckBounds(x, z) && BelongsToPath(x,z,v1, v2, width*widthFactor))
+                    {
+                        Vertex vert = new Vertex(x, z);
+                        float distance = GetDistanceFromLine(vert, v1, v2);
+                        if(v2.x == 30 && v2.z ==80)
+                        {
+                           // Debug.Log(x+","+z+":"+distance);
+                        }
+
+                        float depth = 0;
+
+                        if (distance == 0) //sinc is not defined at 0
+                            distance += 0.01f;
+                        depth = Sinc(distance, width, depthFactor);
+
+
+                        if (depthField[vert.x, vert.z] == 666) //hasnt been modified yet
+                        {
+                            depthField[vert.x, vert.z] = depth;
+                            distField[vert.x, vert.z] = distance;
+                            pathMark[vert.x, vert.z] = 1;//path
+                        }
+                        else if (depthField[vert.x, vert.z] != 666) //has been modified but I can dig it
+                        {
+                            if (distance < distField[vert.x, vert.z])
+                            {
+                                //depthField[vert.x, vert.z] = Math.Min(depthField[vert.x, vert.z], depth);
+                                depthField[vert.x, vert.z] = depth;
+                                distField[vert.x, vert.z] = distance;
+                            }
+                            //depthField[vert.x, vert.z] = (depthField[vert.x, vert.z] + depth)/2;
+                        }
+
+                    }
+                }
+            }
+
+        }
+        
+
+        //fix corners
+
+        for (int i = 0; i < path.Count; i++)
+        {
+            Vertex corner = path[i];
+            //Debug.Log(corner);
+            for (int x = corner.x - widthFactor * 2 * width; x < corner.x + widthFactor  * width; x++)
+            {
+                for (int z = corner.z - widthFactor * 2 * width; z < corner.z + widthFactor  * width; z++)
+                {
+                    if (CheckBounds(x, z))
+                    {
+                        float distance = GetDistance(corner, new Vertex(x, z));
+                        //if (i == 10)
+                        //Debug.Log(i+":"+distance);
+
+                        if (distance < widthFactor * 2 * width)
+                        {
+                            float depth = 0;
+
+                            if (distance == 0) //sinc is not defined at 0
+                                distance += 0.01f;
+
+                            depth = Sinc(distance, width, depthFactor);
+
+
+                            if (depthField[x, z] == 666) //hasnt been modified yet
+                            {
+                                depthField[x, z] = depth;
+                                ColorPixel(x, z, 1, greenColor);
+                                pathMark[x,z] = 2;//corner
+                                distField[x,z] = distance;
+                                //Debug.Log(depth);
+                            }
+                            else if (depthField[x, z] != 666) //has been modified but maybe badly
+                            {
+                                if (distance < distField[x, z])
+                                {
+                                    depthField[x, z] = depth;
+                                    distField[x, z] = distance;
+                                }
+                                //depthField[x, z] = Math.Min(depthField[x, z], depth);
+                                //depthField[x, z] = (depthField[x, z] + depth)/2; //blbost
+                                //ColorPixel(x, z, 1,redColor);
+                                //Debug.Log(x + "," + z);
+
+                            }
+
+                        }
+                        else
+                        {
+                            //ColorPixel(x, z, 0, greenColor);
+                        }
+                    }
+                }
+
+            }
+        }
+
+
+        //apply digging
+        for (int x = 0; x < terrainSize; x++)
+        {
+            for (int z = 0; z < terrainSize; z++)
+            {
+                if (depthField[x, z] != 666)
+                {
+                    vertices[x, z].y += depthField[x, z] * depthFactor;
+
+                }
+            }
+        }
+
+        terrain.build();
+
+
+        ColorPixel(20, 20, 0, greenColor);
+        //color digging
+
+        for (int x = 0; x < terrainSize; x++)
+        {
+            for (int z = 0; z < terrainSize; z++)
+            {
+                if (pathMark[x, z] == 1)
+                {
+                    //ColorPixel(x, z, 0, redColor);
+                }else if (pathMark[x, z] == 2)
+                {
+                    //ColorPixel(x, z, 0, greenColor);
+                }
+            }
+        }
+
+
+    }
+
+    public bool BelongsToPath(int x, int z,Vertex v1,Vertex v2, float width)
+    {
+        
+
+        Vector2 left;
+        Vector2 right;
+        if (v1.x < v2.x)
+        {
+            left = new Vector2(v1.x, v1.z);
+            right = new Vector2(v2.x, v2.z);
+        }
+        else
+        {
+            left = new Vector2(v2.x, v2.z);
+            right = new Vector2(v1.x, v1.z);
+        }
+
+        Vector2 dir = new Vector2(right.y - left.y, -(right.x - left.x));
+        dir = dir.normalized;
+
+        Vector2 point1 = new Vector2(left.x + dir.x * width, left.y + dir.y * width);
+        Vector2 point2 = new Vector2(left.x - dir.x * width, left.y - dir.y * width);
+        //has to be correct order! 1-2-3-4
+        Vector2 point3 = new Vector2(right.x - dir.x * width, right.y - dir.y * width);
+        Vector2 point4 = new Vector2(right.x + dir.x * width, right.y + dir.y * width);
+
+        if (v1.x == 30 && v1.z == 60 && x==10)
+        {
+            Debug.Log(point1);
+            //Debug.Log(point2);
+            //Debug.Log(point3);
+            //Debug.Log(point4);
+        }
+
+        List<Vector2> rectangle = new List<Vector2>();
+        rectangle.Add(point1);
+        rectangle.Add(point2);
+        rectangle.Add(point3);
+        rectangle.Add(point4);
+        
+        bool isInSet = IsInSet(x, z, rectangle);
+        return isInSet;
+    }
+
+    /// <summary>
+    /// y = z
+    /// </summary>
+    /// <returns></returns>
+    public bool IsInSet(int x, int y, List<Vector2> set)
+    {
+        if (set.Count < 3)
+            return false;
+        Vector2 last = set[set.Count-1];
+        Vector2 first = set[0];
+        //determine position of point
+        int position = Math.Sign((first.x - last.x) * (y - last.y) - (first.y - last.y) * (x - last.x));
+        if (position == 0)//not exactly correct!!!
+        {
+            Vector2 A = set[0];
+            Vector2 B = set[1];
+            position = Math.Sign((B.x - A.x) * (y - A.y) - (B.y - A.y) * (x - A.x));
+        }
+        //point has to have smae position from each part of set
+        for(int i = 0; i < set.Count-1; i++)
+        {
+            Vector2 A = set[i];
+            Vector2 B = set[i+1];
+            int pos = Math.Sign((B.x - A.x) * (y - A.y) - (B.y - A.y) * (x - A.x));
+
+            if (pos != position)
+                return false;
+        }
+
+        return true;
+    }
+
+    public bool IsInBox(int x, int z, Vertex v1, Vertex v2)
+    {
+        bool result = true;
+        if (v1.x < v2.x)
+        {
+            if (x < v1.x || v2.x < x)
+                result = false;
+        }
+        else
+        {
+            if (x < v2.x || v1.x < x)
+                result = false;
+        }
+
+        if (v1.z < v2.z)
+        {
+            if (z < v1.z || v2.z < z)
+                result = false;
+        }
+        else
+        {
+            if (z < v2.z || v1.z < z)
+                result = false;
+        }
+
+        return result;
+    }
+
+    public void DigRiver2(List<Vertex> path, int width, float depthFactor)
+    {
+        float[,] depthField = new float[terrainSize, terrainSize]; //depth to dig
+        float[,] distField = new float[terrainSize, terrainSize]; //distance from line
+
+        for (int x = 0; x < terrainSize; x++)
+        {
+            for (int z = 0; z < terrainSize; z++)
+            {
+                depthField[x, z] = 666;//mark
+                distField[x, z] = 666;//mark
+            }
+        }
+        int widthFactor = 2;
+
+        for (int i = 0; i < path.Count - 1; i++)
+        {
+            Vertex v1 = path[i];
+            Vertex v2 = path[i + 1];
+
+            Vertex topLeftCorner = new Vertex(0, 0);
+            Vertex botRightCorner = new Vertex(0, 0);
+            //evaluate position of starting vertex
+            if(v1.x < v2.x)
+            {
+                topLeftCorner.x = v1.x - width * widthFactor;
+                botRightCorner.x = v2.x + width * widthFactor;
+            }
+            else
+            {
+                topLeftCorner.x = v2.x - width * widthFactor;
+                botRightCorner.x = v1.x + width * widthFactor;
+            }
+            if (v1.z < v2.z)
+            {
+                topLeftCorner.z = v2.z + width * widthFactor;
+                botRightCorner.z = v1.z - width * widthFactor;
+            }
+            else
+            {
+                topLeftCorner.z = v1.z + width * widthFactor;
+                botRightCorner.z = v2.z - width * widthFactor;
+            }
+
+            if (topLeftCorner.Equals(botRightCorner))
+            {
+                Debug.Log("same vertices");
+                break;
+            }
+
+            for(int x=topLeftCorner.x; x < botRightCorner.x; x++)
+            {
+                for (int z = topLeftCorner.z; z > botRightCorner.z; z--)
+                {
+                    if (CheckBounds(x, z))
+                    {
+                        Vertex vert = new Vertex(x, z);
+                        float distance = GetDistanceFromLine(vert, v1, v2);
+                        
+                        float depth = 0;
+
+                        if (distance == 0) //sinc is not defined at 0
+                            distance += 0.01f;
+                        depth = Sinc(distance, width, depthFactor);
+
+
+                        if (depthField[vert.x, vert.z] == 666) //hasnt been modified yet
+                        {
+                            depthField[vert.x, vert.z] = depth;
+                            distField[vert.x, vert.z] = distance;
+                        }
+                        else if (depthField[vert.x, vert.z] != 666) //has been modified but I can dig it
+                        {
+                            if (distance < distField[vert.x, vert.z])
+                            {
+                                //depthField[vert.x, vert.z] = Math.Min(depthField[vert.x, vert.z], depth);
+                                depthField[vert.x, vert.z] = depth;
+                                distField[vert.x, vert.z] = distance;
+                            }
+                            //depthField[vert.x, vert.z] = (depthField[vert.x, vert.z] + depth)/2;
+                        }
+
+                    }
+                }
+            }
+            
+        }
+        //fix corners
+        for (int i = 0; i < path.Count; i++)
+        {
+            Vertex corner = path[i];
+            //Debug.Log(corner);
+            for (int x = corner.x - widthFactor * 2 * width; x < corner.x + widthFactor * 2 * width; x++)
+            {
+                for (int z = corner.z - widthFactor * 2 * width; z < corner.z + widthFactor * 2 * width; z++)
+                {
+                    if (CheckBounds(x, z))
+                    {
+                        float distance = GetDistance(corner, new Vertex(x, z));
+                        //if (i == 10)
+                        //Debug.Log(i+":"+distance);
+
+                        if (distance < widthFactor * 2 * width)
+                        {
+                            float depth = 0;
+
+                            if (distance == 0) //sinc is not defined at 0
+                                distance += 0.01f;
+
+                            depth = Sinc(distance, width, depthFactor);
+
+
+                            if (depthField[x, z] == 666) //hasnt been modified yet
+                            {
+                                depthField[x, z] = depth;
+                                ColorPixel(x, z, 1, greenColor);
+                                //Debug.Log(depth);
+                            }
+                            else if (depthField[x, z] != 666) //has been modified but I can dig it
+                            {
+                                //depthField[x, z] = Math.Min(depthField[x, z], depth);
+                                //depthField[x, z] = (depthField[x, z] + depth)/2; //blbost
+                                //ColorPixel(x, z, 1,redColor);
+                                //Debug.Log(x + "," + z);
+
+                            }
+
+                        }
+                        else
+                        {
+                            //ColorPixel(x, z, 0, greenColor);
+                        }
+                    }
+                }
+
+            }
+        }
+        //apply digging
+        for (int x = 0; x < terrainSize; x++)
+        {
+            for (int z = 0; z < terrainSize; z++)
+            {
+                if (depthField[x, z] != 666)
+                {
+                    vertices[x, z].y += depthField[x, z] * depthFactor;
+
+                }
+            }
+        }
+
+        terrain.build();
+
+
+        ColorPixel(20, 20, 0, greenColor);
+        //color digging
+
+        for (int x = 0; x < terrainSize; x++)
+        {
+            for (int z = 0; z < terrainSize; z++)
+            {
+                if (depthField[x, z] != 666)
+                {
+                    //vertices[x, z].y += depthField[x, z] * depthFactor;
+                    //ColorPixel(x, z, 0, redColor);
+                }
+            }
+        }
+        
+
     }
 
     public void DigRiver(List<Vertex> path, int width, float depthFactor)

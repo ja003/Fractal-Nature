@@ -1,6 +1,12 @@
+-----28.11.2015-----
+edit Flood algorithm to choose not only from 8-neighbourhood 
+	(might cost much more!)
+
 -----23.11.2015-----
 algorithm finds path not only with orthogonal or diagonal vertices
 	=> causes error
+improve digging algorithm to be able to dig not only diagonal or 
+orthogonal rivers
 
 -----20.11.2015-----
 fix FloodFromLowestPoint 
