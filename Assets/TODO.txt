@@ -1,3 +1,7 @@
+-----5.12.2015-----
+fix bug - repeating nodes in path 
+better distortion (depending on direction)
+
 -----28.11.2015-----
 edit Flood algorithm to choose not only from 8-neighbourhood 
 	(might cost much more!)

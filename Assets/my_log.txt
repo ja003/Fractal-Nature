@@ -1,3 +1,7 @@
+-----5.12.2015-----
+fixed incorrect Get8Neighbours function
+class decomposition into seperate function logic
+
 -----28.11.2015-----
 improved DigRiver algorithm (currently called DigRiver3)
 new feature

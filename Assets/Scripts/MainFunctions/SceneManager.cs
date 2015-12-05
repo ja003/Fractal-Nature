@@ -10,6 +10,8 @@ public class SceneManager : MonoBehaviour
     FilterManager filterManager;
     ErosionManager erosionManager;
 
+    int frameMark = 0;
+
 
     //CWater water;
 
@@ -130,7 +132,7 @@ public class SceneManager : MonoBehaviour
         riverGenerator = new RiverGenerator(terrain);
 
         //doesn't work well with on-fly generation
-        riverGenerator.PerserveMountains(5, 30);
+        riverGenerator.ftm.PerserveMountains(5, 30);
     }
 
     // Main update loop
@@ -280,15 +282,20 @@ public class SceneManager : MonoBehaviour
 
 
             // Apply button
-            if (GUI.Button(riverMenuRectangle, "MAKE RIVER"))
+            if (GUI.Button(riverMenuRectangle, "MAKE RIVER") 
+                || (Input.GetKeyDown(KeyCode.R) && Time.frameCount > frameMark))
             {
+                //Debug.Log(Time.frameCount);
+                //Debug.Log(frameMark);
+                //Debug.Log("!");
+                frameMark = Time.frameCount + 30;
                 riverGenerator.GenerateRiver();
             }
 
             Rect mountainRectangle = new Rect(0,30, menuWidth - 2*rightOffset, 30);
             if (GUI.Button(mountainRectangle, "MAKE MOUNTAIN"))
             {
-                riverGenerator.PerserveMountains(5,30);
+                riverGenerator.ftm.PerserveMountains(5,30);
             }
 
             offset = 135; // Y offset value
@@ -536,8 +543,12 @@ public class SceneManager : MonoBehaviour
             }
 
             // 3x3 patch matrix
-            if (GUI.Button(new Rect(Screen.width - menuWidth / 2 - rightOffset - 30, offset + 50, menuWidth / 2 - rightOffset - 47, 20), "3x3"))
+            if (GUI.Button(new Rect(Screen.width - menuWidth / 2 - rightOffset - 30, offset + 50, menuWidth / 2 - rightOffset - 47, 20), "3x3")
+
+                || (Input.GetKeyDown(KeyCode.E) && Time.frameCount > frameMark))            
             {
+                //Debug.Log("!");
+                frameMark = Time.frameCount + 30;
                 //Clear maps and reset program
                 destroyMeshes();
                 patchMatrixSize = 3;
