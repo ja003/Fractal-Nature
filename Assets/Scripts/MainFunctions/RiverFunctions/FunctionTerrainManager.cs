@@ -32,6 +32,48 @@ public class FunctionTerrainManager {
         }
     }
 
+    public float GetMedian(int _x, int _z, int regionSize)
+    {
+        //List<float> heights = new List<float>();
+        float heightSum = 0;
+        int count = 0;
+        for (int x = _x - regionSize; x < _x + regionSize; x++)
+        {
+            for (int z = _z - regionSize; z < _z + regionSize; z++)
+            {
+                if (CheckBounds(x, z))
+                {
+                    heightSum += vertices[x, z].y;
+                    count++;
+                }
+            }
+        }
+        if (count == 0)
+            return 0;
+        return heightSum / count;
+    }
+
+    public float GetMedian(int _x, int _z, int regionSize, float[,] depthMap)
+    {
+        //List<float> heights = new List<float>();
+        float heightSum = 0;
+        int count = 0;
+        for (int x = _x - regionSize; x < _x + regionSize; x++)
+        {
+            for (int z = _z - regionSize; z < _z + regionSize; z++)
+            {
+                if (CheckBounds(x, z) && depthMap[x, z] != 666)
+                {
+                    heightSum += depthMap[x, z];
+                    count++;
+                }
+            }
+        }
+        if (count == 0)
+            return 0;
+        return heightSum / count;
+    }
+
     public List<Vertex> Get8Neighbours(Vertex center, int step, int offset, float threshold)
     {
         List<Vertex> neighbours = new List<Vertex>();
@@ -243,21 +285,16 @@ public class FunctionTerrainManager {
         return CheckBounds(vertex.x, vertex.z);
     }
 
-    public float SumEdgeNeighbourhood(int x, int z)
+    public float GetSumFromNeighbourhood(int x, int z, int offset)
     {
         float sum = 0;
-        int offset = 3;
         for (int _x = x - offset; _x <= x + offset; _x++)
         {
             for (int _z = z - offset; _z <= z + offset; _z++)
             {
-                if (!(_x < 0 || _x > terrainSize - 1 || _z < 0 || _z > terrainSize - 1))
+                if (CheckBounds(_x,_z))
                 {
                     sum += vertices[_x, _z].y;
-                }
-                else //avoid corners
-                {
-                    //sum += 0.3;
                 }
             }
         }

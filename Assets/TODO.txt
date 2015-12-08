@@ -1,3 +1,6 @@
+-----8.12.2015-----
+improve distortion (depending on direction)
+
 -----5.12.2015-----
 fix bug - repeating nodes in path 
 better distortion (depending on direction)

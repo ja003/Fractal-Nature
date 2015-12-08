@@ -1,3 +1,10 @@
+-----8.12.2015-----
+implementation of varying river width
+fixed BelongsToPath parameter
+fixed river with parameter
+application of median filter
+
+
 -----5.12.2015-----
 fixed incorrect Get8Neighbours function
 class decomposition into seperate function logic

@@ -271,11 +271,11 @@ public class FunctionRiverPlanner  {
             finalPath.Add(connectEnd);
         }
 
-        //ClearTerrain();
+        //ftm.ClearTerrain();
 
-        frd.DistortPath(finalPath, 10);
+        frd.DistortPath(finalPath, 5);
 
-        frd.DigRiver3(finalPath, 10, 0.45f);
+        frd.DigRiver(finalPath, 10, 0.45f);
 
         Debug.Log("---------------");
         foreach (Vertex v in finalPath)

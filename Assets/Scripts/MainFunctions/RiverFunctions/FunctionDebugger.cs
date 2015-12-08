@@ -6,6 +6,12 @@ public class FunctionDebugger{
 
     public RiverGenerator rg;
 
+
+    public Color redColor = new Color(1, 0, 0);
+    public Color greenColor = new Color(0, 1, 0);
+    public Color blueColor = new Color(0, 0, 1);
+    public Color pinkColor = new Color(1, 0, 1);
+
     public FunctionTerrainManager ftm;
 
     public Vector3[,] vertices;

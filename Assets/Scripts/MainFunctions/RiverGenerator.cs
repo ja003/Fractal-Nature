@@ -58,10 +58,13 @@ public class RiverGenerator
 
         frd.fmc = fmc;
         frd.ftm = ftm;
+        frd.fd = fd;
 
         ftm.fmc = fmc;
 
         fd.ftm = ftm;
+
+        fmc.ftm = ftm;
 
     }
 
@@ -89,9 +92,14 @@ public class RiverGenerator
         tempList.Add(new Vertex(40,135));
         tempList.Add(new Vertex(55,120));
 
-        //DigRiver3(tempList, 10, 0.4f);
+        //ftm.ClearTerrain();
 
+        //frd.DigRiver(tempList, 5, 0.4f);
+
+        //ACTUAL
         frp.FloodFromLowestPoint();
+        
+        
         //terrain.build();
 
         //Test();

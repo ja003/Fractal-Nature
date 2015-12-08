@@ -283,7 +283,7 @@ public class SceneManager : MonoBehaviour
 
             // Apply button
             if (GUI.Button(riverMenuRectangle, "MAKE RIVER") 
-                || (Input.GetKeyDown(KeyCode.R) && Time.frameCount > frameMark))
+                || (Input.GetKeyDown(KeyCode.T) && Time.frameCount > frameMark))
             {
                 //Debug.Log(Time.frameCount);
                 //Debug.Log(frameMark);

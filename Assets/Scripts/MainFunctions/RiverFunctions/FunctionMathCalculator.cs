@@ -8,6 +8,7 @@ public class FunctionMathCalculator  {
     public RiverGenerator rg;
 
     public FunctionTerrainManager ftm;
+    
 
     public Vector3[,] vertices;
     public int terrainSize;
@@ -21,8 +22,6 @@ public class FunctionMathCalculator  {
 
     public bool BelongsToPath(int x, int z, Vertex v1, Vertex v2, float width)
     {
-
-
         Vector2 left;
         Vector2 right;
         if (v1.x < v2.x)
@@ -39,11 +38,12 @@ public class FunctionMathCalculator  {
         Vector2 dir = new Vector2(right.y - left.y, -(right.x - left.x));
         dir = dir.normalized;
 
-        Vector2 point1 = new Vector2(left.x + dir.x * width, left.y + dir.y * width);
-        Vector2 point2 = new Vector2(left.x - dir.x * width, left.y - dir.y * width);
+        float widthMultiplier = 2.1f;
+        Vector2 point1 = new Vector2(left.x + dir.x * widthMultiplier * width, left.y + dir.y * widthMultiplier * width);
+        Vector2 point2 = new Vector2(left.x - dir.x * widthMultiplier * width, left.y - dir.y * widthMultiplier * width);
         //has to be correct order! 1-2-3-4
-        Vector2 point3 = new Vector2(right.x - dir.x * width, right.y - dir.y * width);
-        Vector2 point4 = new Vector2(right.x + dir.x * width, right.y + dir.y * width);
+        Vector2 point3 = new Vector2(right.x - dir.x * widthMultiplier * width, right.y - dir.y * widthMultiplier * width);
+        Vector2 point4 = new Vector2(right.x + dir.x * widthMultiplier * width, right.y + dir.y * widthMultiplier * width);
 
         if (v1.x == 30 && v1.z == 60 && x == 10)
         {
@@ -126,26 +126,7 @@ public class FunctionMathCalculator  {
 
 
 
-    public float GetMedian(int _x, int _z, int regionSize, Vector3[,] vertices)
-    {
-        //List<float> heights = new List<float>();
-        float heightSum = 0;
-        int count = 0;
-        for (int x = _x - regionSize; x < _x + regionSize; x++)
-        {
-            for (int z = _z - regionSize; z < _z + regionSize; z++)
-            {
-                if (ftm.CheckBounds(x, z))
-                {
-                    heightSum += vertices[x, z].y;
-                    count++;
-                }
-            }
-        }
-        if (count == 0)
-            return 0;
-        return heightSum / count;
-    }
+    
 
 
     public bool IsCloseTo(int value, int border, int offset)
@@ -163,9 +144,71 @@ public class FunctionMathCalculator  {
         return (float)(Math.Abs(a * point.x + b * point.z + c) / (Math.Sqrt(a * a + b * b)));
     }
 
+    public Vertex ProjectPointOnLine(Vertex point, Vector3 line)
+    {
+        //Debug.Log(point);
+        //Debug.Log(line);
+        float x;
+        float y;
+        //get perpendicular line
+        Vector3 perpLine = new Vector3(line.y, -line.x, 0);
+        float c = -perpLine.x * point.x - perpLine.y * point.z;
+        perpLine.z = c;
+        //get intersection
+        if(line.x == 0){
+            x = point.x;
+            y = -line.z/line.y;
+        }
+        else if (perpLine.x == 0)
+        {
+            x = -line.z/line.x;
+            y = point.z;
+        }
+        else
+        {
+            float xDiv = line.x / perpLine.x;
+            Vector3 substrLines = line - xDiv * perpLine;
+            substrLines.x = 0;//to be sure
+            y = -substrLines.z / substrLines.y;
+            x = -(line.y * y + line.z) / line.x;
+        }
+
+        if (!ftm.CheckBounds((int)x, (int)y)){
+            
+            Debug.Log("!");
+            return point;
+        }
+        //Debug.Log(x);
+        //Debug.Log(y);
+        //Debug.Log("--------");
+        return new Vertex((int)x, (int)y, vertices[(int)x, (int)y].y);
+    }
+
+    public float GetDistanceBetweenPoints(Vertex point1, Vertex point2)
+    {
+        float a = point2.x - point1.x;
+        float b = point2.z - point1.z;
+        float distance = (float)Math.Sqrt(a * a + b * b);
+        return distance;
+    }
+
+    public Vector3 GetGeneralLineEquation(Vertex v1, Vertex v2)
+    {
+       // Debug.Log(v1);
+        //Debug.Log(v2);
+        int a = v1.z - v2.z;
+        int b = -(v1.x - v2.x);
+        int c = -(a * v1.x) - (b * v1.z);
+
+        //Debug.Log(a + "," + b + "," + c);
+
+        return new Vector3(a, b, c);
+    }
+
     public float GetDistanceFromLine(Vertex point, Vertex v1, Vertex v2)
     {
         //general line equation parameters
+
         int a = v1.z - v2.z;
         int b = -(v1.x - v2.x);
         int c = -(a * v1.x) - (b * v1.z);
