@@ -7,11 +7,11 @@ public class Vertex
     public int z { get; set; }
     public float height { get; set; }
 
-    public Vertex(int x, int z, float value)
+    public Vertex(int x, int z, float height)
     {
         this.x = x;
         this.z = z;
-        this.height = value;
+        this.height = height;
     }
     public Vertex(int x, int z)
     {
@@ -19,11 +19,11 @@ public class Vertex
         this.z = z;
         this.height = 0;
     }
-    public void Rewrite(int x, int z, float value)
+    public void Rewrite(int x, int z, float height)
     {
         this.x = x;
         this.z = z;
-        this.height = value;
+        this.height = height;
     }
     public override bool Equals(object obj)
     {

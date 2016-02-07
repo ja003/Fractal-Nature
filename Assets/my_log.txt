@@ -1,3 +1,29 @@
+-----7.2.2016-----
+rework of river generating algorithm
+
+- implemented first step
+-- find lowest region
+-- get path from this region to one of a side
+
+-----11.1.2016-----
+implementation of on flight generation of river 
+	!incomplete
+	
+
+-----8.1.2016-----
+added MirrorEdge method
+	used in on-flight generation
+
+-----3.1.2016-----
+BUG (in original version)
+	on-flight generation doesn't work OK with 2x2 size
+	
+PerserveMountains
+	removed isInRange parameter (never used)
+	
+SmoothTerrainTransition
+	FINISH
+	
 -----8.12.2015-----
 implementation of varying river width
 fixed BelongsToPath parameter

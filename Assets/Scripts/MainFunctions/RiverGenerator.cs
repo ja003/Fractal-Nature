@@ -25,6 +25,8 @@ public class RiverGenerator
     public FunctionTerrainManager ftm;
     public FunctionDebugger fd;
 
+    public RiverInfo currentRiver;
+
     //***********<RIVER...>*************
     public RiverGenerator(TerrainGenerator terrain)
     {
@@ -42,6 +44,9 @@ public class RiverGenerator
         ftm = new FunctionTerrainManager(this);
         fd = new FunctionDebugger(this);
 
+        currentRiver = new RiverInfo(terrain);
+        
+
         AssignFunctions();
     }
 
@@ -55,6 +60,7 @@ public class RiverGenerator
         frp.fmc = fmc;
         frp.ftm = ftm;
         frp.fd = fd;
+        frp.currentRiver = currentRiver;
 
         frd.fmc = fmc;
         frd.ftm = ftm;
@@ -65,6 +71,8 @@ public class RiverGenerator
         fd.ftm = ftm;
 
         fmc.ftm = ftm;
+
+        currentRiver.frp = frp;
 
     }
 
@@ -97,9 +105,16 @@ public class RiverGenerator
         //frd.DigRiver(tempList, 5, 0.4f);
 
         //ACTUAL
-        frp.FloodFromLowestPoint();
-        
-        
+        //frp.FloodFromLowestPoint();
+
+        Vertex start = ftm.GetLowestRegionCenter(20, 50);
+        Debug.Log("starting from " + start);
+
+        RiverInfo river = frp.GetRiverPathFrom(start, new List<Direction>(),
+            0, terrainSize, 0, terrainSize);
+        Debug.Log(river);
+
+
         //terrain.build();
 
         //Test();

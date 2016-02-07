@@ -76,29 +76,46 @@ public class FunctionTerrainManager {
 
     public List<Vertex> Get8Neighbours(Vertex center, int step, int offset, float threshold)
     {
+        return Get8Neighbours(center, step, offset, threshold, 0, terrainSize, 0, terrainSize);
+    }
+
+    public List<Vertex> Get8Neighbours(Vertex center, int step, int offset, float threshold, int x_min, int x_max, int z_min, int z_max)
+    {
         List<Vertex> neighbours = new List<Vertex>();
         int x = center.x;
         int z = center.z;
 
+        if(fmc.GetDistanceFromCorner(x,z, x_min, x_max, z_min, z_max) < 2 * offset) //dont process points too close to corners
+        {
+            return neighbours;
+        }
+
         //left
-        if (CheckBounds(x - step, z, offset) && vertices[x - step, z].y < threshold) { neighbours.Add(new Vertex(x - step, z, vertices[x - step, z].y)); }
+        if (CheckBounds(x - step, z, offset, x_min,x_max,z_min,z_max) && vertices[x - step, z].y < threshold)
+            { neighbours.Add(new Vertex(x - step, z, vertices[x - step, z].y)); }
         //up
-        if (CheckBounds(x, z + step, offset) && vertices[x, z + step].y < threshold) { neighbours.Add(new Vertex(x, z + step, vertices[x, z + step].y)); }
+        if (CheckBounds(x, z + step, offset, x_min, x_max, z_min, z_max) && vertices[x, z + step].y < threshold)
+            { neighbours.Add(new Vertex(x, z + step, vertices[x, z + step].y)); }
         //righ
-        if (CheckBounds(x + step, z, offset) && vertices[x + step, z].y < threshold) { neighbours.Add(new Vertex(x + step, z, vertices[x + step, z].y)); }
+        if (CheckBounds(x + step, z, offset, x_min, x_max, z_min, z_max) && vertices[x + step, z].y < threshold)
+            { neighbours.Add(new Vertex(x + step, z, vertices[x + step, z].y)); }
         //down
-        if (CheckBounds(x, z - step, offset) && vertices[x, z - step].y < threshold) { neighbours.Add(new Vertex(x, z - step, vertices[x, z - step].y)); }
+        if (CheckBounds(x, z - step, offset, x_min, x_max, z_min, z_max) && vertices[x, z - step].y < threshold)
+            { neighbours.Add(new Vertex(x, z - step, vertices[x, z - step].y)); }
 
         //leftUp
-        if (CheckBounds(x - step, z + step, offset) && vertices[x - step, z + step].y < threshold) { neighbours.Add(new Vertex(x - step, z + step, vertices[x - step, z + step].y)); }
+        if (CheckBounds(x - step, z + step, offset, x_min, x_max, z_min, z_max) && vertices[x - step, z + step].y < threshold)
+            { neighbours.Add(new Vertex(x - step, z + step, vertices[x - step, z + step].y)); }
         //rightUp
-        if (CheckBounds(x + step, z + step, offset) && vertices[x + step, z + step].y < threshold) { neighbours.Add(new Vertex(x + step, z + step, vertices[x + step, z + step].y)); }
+        if (CheckBounds(x + step, z + step, offset, x_min, x_max, z_min, z_max) && vertices[x + step, z + step].y < threshold)
+            { neighbours.Add(new Vertex(x + step, z + step, vertices[x + step, z + step].y)); }
         //righDown
-        if (CheckBounds(x + step, z - step, offset) && vertices[x + step, z - step].y < threshold) { neighbours.Add(new Vertex(x + step, z - step, vertices[x + step, z - step].y)); }
+        if (CheckBounds(x + step, z - step, offset, x_min, x_max, z_min, z_max) && vertices[x + step, z - step].y < threshold)
+            { neighbours.Add(new Vertex(x + step, z - step, vertices[x + step, z - step].y)); }
         //leftDown
-        if (CheckBounds(x - step, z - step, offset) && vertices[x - step, z - step].y < threshold) { neighbours.Add(new Vertex(x - step, z - step, vertices[x - step, z - step].y)); }
-
-
+        if (CheckBounds(x - step, z - step, offset, x_min, x_max, z_min, z_max) && vertices[x - step, z - step].y < threshold)
+            { neighbours.Add(new Vertex(x - step, z - step, vertices[x - step, z - step].y)); }
+        
         return neighbours;
     }
 
@@ -122,7 +139,7 @@ public class FunctionTerrainManager {
 
     public Vertex GetLowestRegionCenter(int radius, int offset)
     {
-        double lowestSum = 10;
+        double lowestSum = 100;
         Vertex lowestRegionCenter = new Vertex(offset, offset, 10);
         for (int x = offset; x < terrainSize - offset; x += radius)
         {
@@ -135,6 +152,8 @@ public class FunctionTerrainManager {
                     {
                         if (CheckBounds(i, j))
                             sum += vertices[i, j].y;
+                        else
+                            sum += 1;
                     }
                 }
                 if (sum < lowestSum)
@@ -148,44 +167,54 @@ public class FunctionTerrainManager {
         return lowestRegionCenter;
     }
 
+
+    /// <summary>
+    /// calls PerserveMountains on whole map
+    /// </summary>
+    /// <param name="count"></param>
+    /// <param name="radius"></param>
+    public void PerserveMountains(int count, int radius, int scaleFactor)
+    {
+        PerserveMountains(count, radius, scaleFactor, 0, terrainSize, 0, terrainSize);
+    }
+
     /// <summary>
     /// modifies current terrain
     /// finds 'x' highest peaks which are at least 'radius' away from each other
     /// then all vertices hight is lowered using GetScale function based on logarithm 
+    /// 
+    /// applied only on restricted area
     /// </summary>
     /// <param name="count"></param>
     /// <param name="radius"></param>
-    public void PerserveMountains(int count, int radius)
+    public void PerserveMountains(int count, int radius, int scaleFactor,int x_min, int x_max, int z_min, int z_max)
     {
-        int scaleFactor = 20;
-
         List<Vertex> peaks = new List<Vertex>();
         for (int i = 0; i < count; i++)
         {
             if (FindNextHighestPeak(radius, peaks) != null)
                 peaks.Add(FindNextHighestPeak(radius, peaks));
-            //Debug.Log(i+"-:"+peaks[i]);
         }
 
-        for (int x = 0; x < terrainSize; x++)
+        for (int x = x_min; x < x_max; x++)
         {
-            for (int z = 0; z < terrainSize; z++)
+            for (int z = z_min; z < z_max; z++)
             {
                 Vertex vert = new Vertex(x, z, vertices[x, z].y);
-                bool isInRange = false;
                 double scale = 0;
                 foreach (Vertex v in peaks)
                 {
-                    if (fmc.IsInRange(vert, v, radius))
-                    {
-                        isInRange = true;
-                    }
                     if (fmc.GetScale(vert, v, radius) > scale)
                     {
                         scale = fmc.GetScale(vert, v, radius);
                     }
                 }
+                /*
+                int distance = DistanceFromLine(x, z, x_min, x_max,z_min,z_max);
+                if (x < 10 && z < 10)
+                    Debug.Log((float)Math.Pow(scale, scaleFactor) *((float)distance / terrainSize));*/
 
+                //vertices[x, z].y *= (float)Math.Pow(scale, scaleFactor) *((float)distance /(terrainSize/4));
                 vertices[x, z].y *= (float)Math.Pow(scale, scaleFactor);
 
             }
@@ -206,6 +235,244 @@ public class FunctionTerrainManager {
         }
 
         rg.terrain.build();
+    }
+    
+
+    public int DistanceFromLine(int x, int z, int x_min, int x_max, int z_min, int z_max)
+    {
+        return Math.Min(
+            Math.Min(
+                Math.Min(x, z),
+                Math.Min(x_max - x, z_max - z)),
+            Math.Min(
+                Math.Abs(x_min - x), 
+                Math.Abs(z_min - z)));
+    }
+
+    public void MedianBlur(Vertex downLeft, Vertex upRight)
+    {
+        float[,] depthField = new float[vertices.Length, vertices.Length];
+        for(int x = 0; x < vertices.Length; x++)
+        {
+            for(int z = 0; z < vertices.Length; z++)
+            {
+                depthField[x, z] = vertices[x, z].y;
+            }
+        }
+
+        for(int x = downLeft.x; x < upRight.x; x++)
+        {
+            for(int z = downLeft.z; z < upRight.z; z++)
+            {
+                vertices[x, z].y = GetMedian(x, z, 10, depthField);
+            }
+        }
+    }
+
+
+    /*
+    public enum Direction
+    {
+        up,
+        down,
+        left,
+        right
+    }*/
+
+    public void MirrorEdge(int patchSize, int width, Direction direction)
+    {
+        int line;
+        if (direction == Direction.up || direction == Direction.right)
+            line = terrainSize - patchSize;
+        else
+            line = patchSize;
+
+        if (direction == Direction.up || direction == Direction.down)
+        {
+            for (int x = 0; x < terrainSize; x++)
+            {
+                for (int w = 0; w < width; w++)
+                {
+                    if (direction == Direction.up)
+                    {
+                        int z_orig = line - w - 1;
+                        int z_new = line + w;
+
+                        vertices[x, z_new].y =
+                            ((float)(width - w) / width) * vertices[x, z_orig].y +
+                            ((float)w / width) * vertices[x, z_new].y;
+                    }
+                    else
+                    {
+                        int z_orig = line + w;
+                        int z_new = line - w - 1;
+
+                        vertices[x, z_new].y =
+                            ((float)(width - w) / width) * vertices[x, z_orig].y +
+                            ((float)w / width) * vertices[x, z_new].y;
+
+                    }                    
+                }
+            }
+        }
+        else
+        {
+            for (int z = 0; z < terrainSize; z++)
+            {
+                for (int w = 0; w < width; w++)
+                {
+                    if (direction == Direction.right)
+                    {
+                        int x_orig = line - w - 1;
+                        int x_new = line + w;
+
+                        vertices[x_new,z].y =
+                            ((float)(width - w) / width) * vertices[x_orig,z].y +
+                            ((float)w / width) * vertices[x_new,z].y;
+                    }
+                    else
+                    {
+                        int x_orig = line + w;
+                        int x_new = line - w - 1;
+
+                        vertices[x_new, z].y =
+                            ((float)(width - w) / width) * vertices[x_orig,z].y +
+                            ((float)w / width) * vertices[x_new,z].y;
+
+                    }
+                }
+            }
+
+        }
+
+        rg.terrain.build();
+    }
+
+    /// <summary>
+    /// DOESNT WORK WELL
+    /// </summary>
+    /// <param name="width"></param>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <param name="direction"></param>
+    public void SmoothTerrainTransition(int width, Vertex start, Vertex end, Direction direction)
+    {
+        //Debug.Log("!");
+        //Debug.Log(start);
+        //Debug.Log(end);
+        //Debug.Log(direction);
+        int lineStart;
+        int lineEnd;
+
+        int transStart;
+
+        int sgnDirection;
+
+        switch (direction)
+        {
+            case Direction.right:
+                lineStart = start.z;
+                lineEnd = end.z;
+                transStart = start.x; 
+                sgnDirection = 1;
+                break;
+            case Direction.left:
+                lineStart = start.z;
+                lineEnd = end.z;
+                transStart = start.x;
+                sgnDirection = -1;
+                break;
+            case Direction.up:
+                lineStart = start.x;
+                lineEnd = end.x;
+                transStart = start.z;
+                sgnDirection = 1;
+                break;
+            case Direction.down:
+                lineStart = start.x;
+                lineEnd = end.x;
+                transStart = start.x;
+                sgnDirection = -1;
+                break;
+            default:
+                lineStart = start.x;
+                lineEnd = end.x;
+                transStart = start.z;
+                sgnDirection = 1;
+                break;
+        }
+        //Debug.Log(lineStart);
+        //Debug.Log(lineEnd);
+        //Debug.Log(transStart);
+        //Debug.Log(sgnDirection);
+        for (int line = lineStart; line < lineEnd-1; line++)
+        {
+            float step;
+            switch (direction)
+            {
+                case Direction.right:
+                    step = (vertices[transStart, line].y + vertices[transStart + sgnDirection * width, line].y) / width;
+                    break;
+                case Direction.left:
+                    step = (vertices[transStart, line].y + vertices[transStart + sgnDirection * width, line].y) / width;
+                    break;
+                case Direction.up:
+                    if(line > 100 && line < 110)
+                    {
+                        Debug.Log(vertices[line, transStart].y);
+                        Debug.Log(vertices[line, transStart + sgnDirection * width].y);
+                        Debug.Log((vertices[line, transStart].y + vertices[line, transStart + sgnDirection * width].y) / width);
+                    }
+                    step = (vertices[line, transStart].y - vertices[line, transStart + sgnDirection * width].y) / width;
+                    break;
+                case Direction.down:
+                    step = (vertices[line, transStart].y + vertices[line, transStart + sgnDirection * width].y) / width;
+                    break;
+                default:
+                    step = (vertices[transStart, line].y + vertices[transStart + sgnDirection * width, line].y) / width;
+                    break;
+            }
+            int stepCount = -1;
+            for(int trans = transStart+2; trans != transStart + sgnDirection * width; trans+= sgnDirection)
+            {
+                stepCount++;
+                int x;
+                int z;
+
+                switch (direction)
+                {
+                    case Direction.right:
+                        x = trans;
+                        z = line;
+                        break;
+                    case Direction.left:
+                        x = trans;
+                        z = line;
+                        break;
+                    case Direction.up:
+                        x = line;
+                        z = trans;
+                        break;
+                    case Direction.down:
+                        x = line;
+                        z = trans;
+                        break;
+                    default:
+                        x = trans;
+                        z = line;
+                        break;
+                }
+                if (CheckBounds(x, z))
+                {
+                    vertices[x, z].y = (width - stepCount) * step;
+                    //vertices[x, z].y = vertices[line, transStart + 1].y - stepCount * step;
+                }
+                else
+                {
+                    Debug.Log(x + "," + z);
+                }
+            }
+        }
     }
 
     public Vertex GetHighestpoint()
@@ -272,7 +539,12 @@ public class FunctionTerrainManager {
 
     public bool CheckBounds(int x, int z, int offset)
     {
-        return x > offset && x < terrainSize - 1 - offset && z > offset && z < terrainSize - 1 - offset;
+        return CheckBounds(x, z, offset, 0, terrainSize, 0, terrainSize);
+    }
+
+    public bool CheckBounds(int x, int z, int offset, int x_min, int x_max, int z_min, int z_max)
+    {
+        return x > x_min+offset && x < x_max - 1 - offset && z > z_min+offset && z < z_max - 1 - offset;
     }
 
     public bool CheckBounds(int x, int z)
@@ -301,5 +573,16 @@ public class FunctionTerrainManager {
         return sum;
     }
 
+    public bool IsOnBorder(Vertex vert)
+    {
+        bool value = false;
+        value =
+            vert.x == 0 ||
+            vert.x == terrainSize - 1 ||
+            vert.z == 0 ||
+            vert.z == terrainSize-1;
+
+        return value;
+    }
 
 }

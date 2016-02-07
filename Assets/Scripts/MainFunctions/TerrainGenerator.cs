@@ -32,7 +32,7 @@ public class TerrainGenerator
 
     //Terrain sizes
     public int terrainSize;
-    int patchSize;
+    public int patchSize;
     int patchCount;
     int meshSize;
     int individualMeshSize;

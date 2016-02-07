@@ -49,10 +49,10 @@ public class FunctionRiverDigger {
         float averageSum = totalSum / sumOfPointNeighb.Count;
 
         List<float> finalWidthValues = new List<float>();
-        Debug.Log("-------------");
+        //Debug.Log("-------------");
         foreach (float f in sumOfPointNeighb)
         {
-            float value = minWidth + minWidth/3 * f / maxSum;
+            float value = minWidth + minWidth/2 * (maxSum - f) / maxSum;
             finalWidthValues.Add(value);
             //Debug.Log(value);
             //finalWidthValues.Add(minWidth);

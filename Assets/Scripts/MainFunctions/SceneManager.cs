@@ -132,7 +132,7 @@ public class SceneManager : MonoBehaviour
         riverGenerator = new RiverGenerator(terrain);
 
         //doesn't work well with on-fly generation
-        riverGenerator.ftm.PerserveMountains(5, 30);
+        riverGenerator.ftm.PerserveMountains(5, 30, 20);
     }
 
     // Main update loop
@@ -160,25 +160,81 @@ public class SceneManager : MonoBehaviour
         // On-the-fly generation - flag check -> boundary check -> function call.
         if (infiniteTerrain)
         {
+            int pathSize = terrain.patchSize;
+            int terrainSize = terrain.terrainSize;
+            int scaleFactor = 10;
+            int offset = 10;
+
             if (camera_position.z > terrain.endOf.z - cameraOffset)
             {
                 terrain.goNorth(diSqFlag, diSqStrength, gaussFlag, gaussAmount, kernelSize, thermalFlag, thermalIterations, thermalSlope, thermalC);
-                //riverGenerator.PerserveMountains(5, 30);
+                
+                //apply mountain function on new part of map
+                riverGenerator.ftm.PerserveMountains(2, 30, scaleFactor, 0, terrainSize, terrainSize - patchSize, terrainSize);
+                
+                riverGenerator.ftm.MirrorEdge(patchSize, 10, Direction.up);
+
+
+                riverGenerator.currentRiver.UpdateDirection(Direction.up);
+                riverGenerator.currentRiver.UpdatePosition(Direction.up);   
+
+                Debug.Log("orig");
+                Debug.Log(riverGenerator.currentRiver);
+                Vertex newStart = new Vertex(riverGenerator.currentRiver.topVertex.x, riverGenerator.currentRiver.topVertex.z);
+                //Debug.Log("starting from:" + newStart);
+                Debug.Log("starting from:" + riverGenerator.currentRiver.topVertex);
+                riverGenerator.frp.FloodFromPoint(riverGenerator.currentRiver.topVertex,
+                    0, terrainSize - 1, terrainSize -1-pathSize- offset, terrainSize -1,
+                    false, false, true, false,
+                    Direction.up);
+
+                Debug.Log("new");
+                Debug.Log(riverGenerator.currentRiver);
+
             }
             if (camera_position.z < terrain.startOf.z + cameraOffset)
             {
                 terrain.goSouth(diSqFlag, diSqStrength, gaussFlag, gaussAmount, kernelSize, thermalFlag, thermalIterations, thermalSlope, thermalC);
-                //riverGenerator.PerserveMountains(5, 30);
+
+                //apply mountain function on new part of map
+                riverGenerator.ftm.PerserveMountains(2, 30, scaleFactor, 0, terrainSize, 0, patchSize);
+
+                riverGenerator.ftm.MirrorEdge(patchSize, 10, Direction.down);
+
+
+                riverGenerator.currentRiver.UpdateDirection(Direction.down);
+                riverGenerator.currentRiver.UpdatePosition(Direction.down);
+
+                Debug.Log("orig");
+                Debug.Log(riverGenerator.currentRiver);
+
+                //Debug.Log("starting from:" + riverGenerator.currentRiver.botVertex);
+                riverGenerator.frp.FloodFromPoint(riverGenerator.currentRiver.botVertex,
+                    0, terrainSize-1, 0, patchSize+offset,
+                    true, false, false, false,
+                    Direction.down);
+
+                Debug.Log("new");
+                Debug.Log(riverGenerator.currentRiver);
+
             }
             if (camera_position.x < terrain.startOf.x + cameraOffset)
             {
                 terrain.goWest(diSqFlag, diSqStrength, gaussFlag, gaussAmount, kernelSize, thermalFlag, thermalIterations, thermalSlope, thermalC);
-                //riverGenerator.PerserveMountains(5, 30);
+
+                //apply mountain function on new part of map
+                riverGenerator.ftm.PerserveMountains(2, 30, scaleFactor, 0, patchSize, 0, terrainSize);
+
+                riverGenerator.ftm.MirrorEdge(patchSize, 10, Direction.left);
             }
             if (camera_position.x > terrain.endOf.x - cameraOffset)
             {
                 terrain.goEast(diSqFlag, diSqStrength, gaussFlag, gaussAmount, kernelSize, thermalFlag, thermalIterations, thermalSlope, thermalC);
-                //riverGenerator.PerserveMountains(5, 30);
+
+                //apply mountain function on new part of map
+                riverGenerator.ftm.PerserveMountains(2, 30, scaleFactor, terrainSize -patchSize, terrainSize, 0, terrainSize);
+
+                riverGenerator.ftm.MirrorEdge(patchSize, 10, Direction.right);
             }
         }
 
@@ -295,7 +351,7 @@ public class SceneManager : MonoBehaviour
             Rect mountainRectangle = new Rect(0,30, menuWidth - 2*rightOffset, 30);
             if (GUI.Button(mountainRectangle, "MAKE MOUNTAIN"))
             {
-                riverGenerator.ftm.PerserveMountains(5,30);
+                riverGenerator.ftm.PerserveMountains(5,30,20);
             }
 
             offset = 135; // Y offset value

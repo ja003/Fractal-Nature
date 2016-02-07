@@ -123,10 +123,104 @@ public class FunctionMathCalculator  {
         return result;
     }
 
-
-
-
+    // determines if point is close to one of the available side
+    public bool ReachedAvailableSide(
+        int x, int z, List<Direction> reachedSides, int borderOffset,
+        int x_min, int x_max, int z_min, int z_max)
+    {
+        bool reachedAvailableSide = true;
+        foreach (Direction sides in reachedSides)
+        {
+            switch (sides)
+            {
+                case Direction.up:
+                    if (IsCloseTo(z, z_max, borderOffset))
+                    {
+                        reachedAvailableSide = false;
+                    }
+                    break;
+                case Direction.right:
+                    if (IsCloseTo(x, x_max, borderOffset))
+                    {
+                        reachedAvailableSide = false;
+                    }
+                    break;
+                case Direction.down:
+                    if (IsCloseTo(z, z_min, borderOffset))
+                    {
+                        reachedAvailableSide = false;
+                    }
+                    break;
+                case Direction.left:
+                    if (IsCloseTo(x, x_min, borderOffset))
+                    {
+                        reachedAvailableSide = false;
+                    }
+                    break;
+            }
+        }
+        return reachedAvailableSide;
+    }
     
+    /// returns the closest side to given points
+    public Direction GetReachedSide(
+        int x, int z, int borderOffset,
+        int x_min, int x_max, int z_min, int z_max)
+    {
+        if (IsCloseTo(z, z_max, borderOffset))
+        {
+            return Direction.up;
+        }
+        if (IsCloseTo(x, x_max, borderOffset))
+        {
+            return Direction.right;
+        }
+        if (IsCloseTo(z, z_min, borderOffset))
+        {
+            return Direction.down;
+        }
+        if (IsCloseTo(x, x_min, borderOffset))
+        {
+            return Direction.left;
+        }
+        return Direction.none;
+    }
+    
+    // returns projection of given vertex on side of defined border
+    public Vertex GetVertexOnBorder(Vertex vertex, int borderOffset, Direction onSide,
+        int x_min, int x_max, int z_min, int z_max)
+    {
+        int x = vertex.x;
+        int z = vertex.z;
+
+        switch (onSide)
+        {
+            case Direction.up:
+                return new Vertex(x, z_max, vertex.height);
+            case Direction.right:
+                return new Vertex(x_max, z, vertex.height);
+            case Direction.down:
+                return new Vertex(x, z_min, vertex.height);
+            case Direction.left:
+                return new Vertex(x_min, z, vertex.height);
+        }
+        return vertex;
+    }
+    
+    // returns distance from corner of restricted area
+    public float GetDistanceFromCorner(int x, int z,
+        int x_min, int x_max, int z_min, int z_max)
+    {
+        List<float> distances = new List<float>();
+        distances.Add(GetDistance(x, z, x_min, z_min));
+        distances.Add(GetDistance(x, z, x_min, z_max));
+        distances.Add(GetDistance(x, z, x_max, z_min));
+        distances.Add(GetDistance(x, z, x_max, z_max));
+
+        distances.Sort();
+
+        return distances[0];
+    }
 
 
     public bool IsCloseTo(int value, int border, int offset)
@@ -173,9 +267,7 @@ public class FunctionMathCalculator  {
             x = -(line.y * y + line.z) / line.x;
         }
 
-        if (!ftm.CheckBounds((int)x, (int)y)){
-            
-            Debug.Log("!");
+        if (!ftm.CheckBounds((int)x, (int)y)){            
             return point;
         }
         //Debug.Log(x);
@@ -225,6 +317,11 @@ public class FunctionMathCalculator  {
     public double GetScale(Vertex v1, Vertex v2, int radius)
     {
         return Math.Log(terrainSize - GetDistance(v1, v2), terrainSize);
+    }
+
+    public float GetDistance(int x1, int z1, int x2, int z2)
+    {
+        return GetDistance(new Vertex(x1, z1), new Vertex(x2, z2));
     }
 
     public float GetDistance(Vertex v1, Vertex v2)
